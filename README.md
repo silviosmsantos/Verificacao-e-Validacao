@@ -1,32 +1,55 @@
-Criar um ambiente virtual:
+## Passo a Passo para Configuração de um Projeto Django
 
-- python -m venv venv
-- source venv/bin/activate # No Windows use: venv\Scripts\activate
+### 1. Instalar Django:
 
-Instalar Django:
+```bash
+  pip install django
+```
 
-- pip install django
+### 2. Iniciar um projeto Django:
 
-Iniciar um projeto Django:
+```bash
+  django-admin startproject config .
+```
 
-- django-admin startproject config .
+### 3. Iniciar um aplicativo dentro do projeto:
 
-Iniciar um aplicativo dentro do projeto:
-
+```bash
 - python3 manage.py startapp catalog
+```
 
-Criar as Migrações para os Modelos
+### 4. Criar um ambiente virtual:
 
-- python3 manage.py makemigrations
+```bash
+  python -m venv venv
+```
 
-Aplicar as Migrações ao Banco de Dados
+### 4. Ativar ambiente virtual:
 
-- python3 manage.py migrate
+```bash
+  source venv/bin/activate
+```
 
-Criar um superusuário:
+### 5. Criar as Migrações para os Modelos
 
-- python3 manage.py createsuperuser
+```bash
+  python3 manage.py makemigrations
+```
 
-Rodar o servidor de desenvolvimento:
+### 6. Aplicar as Migrações ao Banco de Dados
 
-- python3 manage.py runserver
+```bash
+  python3 manage.py migrate
+```
+
+### 7. Criar um superusuário:
+
+```bash
+  python3 manage.py createsuperuser
+```
+
+### 8. Rodar o servidor de desenvolvimento:
+
+```bash
+  python3 manage.py runserver
+```
