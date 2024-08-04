@@ -1,54 +1,60 @@
 ## Passo a Passo para Configuração de um Projeto Django
 
-### 1. Instalar Django:
+### 1. Install Django:
 
 ```bash
   pip install django
 ```
 
-### 2. Iniciar um projeto Django:
+### 2. Start a Django Project:
 
 ```bash
   django-admin startproject config .
 ```
 
-### 3. Iniciar um aplicativo dentro do projeto:
+### 3. Start an Application within the Project:
 
 ```bash
 - python3 manage.py startapp catalog
 ```
 
-### 4. Criar um ambiente virtual:
+### 4. Create a Virtual Environment:
 
 ```bash
   python -m venv venv
 ```
 
-### 4. Ativar ambiente virtual:
+### 5. Activate the Virtual Environment:
 
 ```bash
   source venv/bin/activate
 ```
 
-### 5. Criar as Migrações para os Modelos
+### 6. Install Dependencies from requirements.txt:
+
+```bash
+  source pip install -r requirements.txt
+```
+
+### 7. Create Migrations for the Models:
 
 ```bash
   python3 manage.py makemigrations
 ```
 
-### 6. Aplicar as Migrações ao Banco de Dados
+### 8. Apply Migrations to the Database:
 
 ```bash
   python3 manage.py migrate
 ```
 
-### 7. Criar um superusuário:
+### 9. Create a Superuser:
 
 ```bash
   python3 manage.py createsuperuser
 ```
 
-### 8. Rodar o servidor de desenvolvimento:
+### 10. Run the Development Server:
 
 ```bash
   python3 manage.py runserver
