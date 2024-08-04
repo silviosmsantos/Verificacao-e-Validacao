@@ -1,4 +1,4 @@
-## Passo a Passo para Configuração de um Projeto Django
+## Step-by-Step Guide for Setting Up a Django Project
 
 ### 1. Install Django:
 
