@@ -1,6 +1,7 @@
 from django.db import models
 from .base_model import BaseModel
 from .company_models import Company
+from core.validators.category_validators import validate_category_name
 
 class Category(BaseModel):
     STATUS_CHOICES = [
@@ -8,7 +9,12 @@ class Category(BaseModel):
         ('inactive', 'Inactive'),
     ]
 
-    name = models.CharField(max_length=255, null=False, blank=False)
+    name = models.CharField(
+        max_length=255,
+        null=False,
+        blank=False,
+        validators=[validate_category_name]
+    )
     status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,
