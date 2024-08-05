@@ -29,7 +29,7 @@ class User(BaseModel):
         choices=STATUS_CHOICES,
         default='active'
     )
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='users')
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='users', null=True, blank=False)
     
     class Meta:
         verbose_name = "User"
