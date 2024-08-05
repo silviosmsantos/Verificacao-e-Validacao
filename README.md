@@ -1,4 +1,4 @@
-## Step-by-Step Guide for Setting Up a Django Project
+## Step-by-step guide to set up the project
 
 ### 1. Create a Virtual Environment:
 
@@ -40,4 +40,14 @@
 
 ```bash
   python3 manage.py runserver
+```
+
+### 7. Run tests for the core repositories and services layer
+
+```bash
+  python manage.py test core.tests.services
+```
+
+```bash
+  python manage.py test core.tests.repositories
 ```
