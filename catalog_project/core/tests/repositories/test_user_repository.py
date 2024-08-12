@@ -1,3 +1,4 @@
+# core/tests/test_user_repository.py
 from django.test import TestCase
 from core.repositories.user_repository import UserRepository
 from core.models.user_models import User
@@ -6,7 +7,15 @@ from core.models.company_models import Company
 class UserRepositoryTest(TestCase):
     def setUp(self):
         self.company = Company.objects.create(name='Test Company', status='active')
-        self.user = User.objects.create(name='Test User', email='test@example.com', phone='1234567890', password='password', status='active', company=self.company)
+        
+        self.user = User.objects.create_user(
+            email='test@example.com',
+            password='password',
+            name='Test User',
+            phone='1234567890',
+            status='active',
+            company=self.company
+        )
 
     def test_get_all_users(self):
         users = UserRepository.get_all_users()
@@ -17,10 +26,18 @@ class UserRepositoryTest(TestCase):
         self.assertEqual(self.user, user)
 
     def test_create_user(self):
-        data = {'name': 'New User', 'email': 'new@example.com', 'phone': '0987654321', 'password': 'newpassword', 'status': 'active', 'company': self.company.id}
+        data = {
+            'name': 'New User',
+            'email': 'new@example.com',
+            'phone': '0987654321',
+            'password': 'newpassword',
+            'status': 'active',
+            'company': self.company.id
+        }
         user = UserRepository.create_user(data)
         self.assertEqual(user.name, 'New User')
         self.assertEqual(user.company, self.company)
+        self.assertTrue(user.check_password('newpassword'))
 
     def test_update_user(self):
         data = {'name': 'Updated User'}

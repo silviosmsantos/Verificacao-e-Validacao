@@ -1,3 +1,4 @@
+# core/tests/test_user_service.py
 from django.test import TestCase
 from core.services.user_service import UserService
 from core.models.user_models import User
@@ -5,8 +6,19 @@ from core.models.company_models import Company
 
 class UserServiceTest(TestCase):
     def setUp(self):
+        # Criação de uma empresa para associar ao usuário
         self.company = Company.objects.create(name='Test Company', status='active')
-        self.user = User.objects.create(name='Test User', email='test@example.com', phone='1234567890', password='password', status='active', company=self.company)
+        
+        # Criação de um usuário com senha criptografada
+        self.user = User.objects.create(
+            name='Test User',
+            email='test@example.com',
+            phone='1234567890',
+            status='active',
+            company=self.company
+        )
+        self.user.set_password('password')
+        self.user.save()
 
     def test_get_all_users(self):
         users = UserService.get_all_users()
@@ -17,10 +29,18 @@ class UserServiceTest(TestCase):
         self.assertEqual(self.user, user)
 
     def test_create_user(self):
-        data = {'name': 'New User', 'email': 'new@example.com', 'phone': '0987654321', 'password': 'newpassword', 'status': 'active', 'company': self.company.id}
+        data = {
+            'name': 'New User',
+            'email': 'new@example.com',
+            'phone': '0987654321',
+            'password': 'newpassword',
+            'status': 'active',
+            'company': self.company.id
+        }
         user = UserService.create_user(data)
         self.assertEqual(user.name, 'New User')
         self.assertEqual(user.company, self.company)
+        self.assertTrue(user.check_password('newpassword'))
 
     def test_update_user(self):
         data = {'name': 'Updated User'}
