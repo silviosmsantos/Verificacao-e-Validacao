@@ -7,11 +7,7 @@ class BaseModel(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
     
-    def save(self, *args, **kwargs):
-        from .user_models import User
-        super(BaseModel, self).save(*args, **kwargs)
-
-    modified_by = models.ForeignKey('core.User', on_delete=models.CASCADE, null=True, blank=False, related_name="%(class)s_modified_by")
+    modified_by = models.ForeignKey('auth.User', on_delete=models.CASCADE, null=True, blank=True, related_name="%(class)s_modified_by")
 
     class Meta:
         abstract = True
