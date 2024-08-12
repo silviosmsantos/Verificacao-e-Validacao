@@ -12,3 +12,4 @@ def validate_company_permission(user):
     if not user.has_perm('your_app_name.manage_company'):
         raise ValidationError("You do not have permission to manage companies.")
 
+ 
