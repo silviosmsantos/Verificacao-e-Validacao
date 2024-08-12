@@ -15,7 +15,7 @@
 ### 3. Install Dependencies from requirements.txt:
 
 ```bash
-  source pip install -r requirements.txt
+  pip install -r requirements.txt
 ```
 
 ### 4. Create Migrations for the Models:
