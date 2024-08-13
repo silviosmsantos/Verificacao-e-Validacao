@@ -1,4 +1,3 @@
-# core/tests/services/test_message_service.py
 from django.test import TestCase
 from core.models.company_models import Company
 from core.models.message_models import Message

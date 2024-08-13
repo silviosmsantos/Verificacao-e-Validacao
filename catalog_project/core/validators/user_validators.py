@@ -1,9 +1,7 @@
-# core/validators/user_validators.py
 from django.core.exceptions import ValidationError
 import re
 
 def validate_password(value):
-    # Exemplo de validação de senha
     if len(value) < 8:
         raise ValidationError('A senha deve ter pelo menos 8 caracteres.')
     if not re.search(r'[A-Z]', value):
