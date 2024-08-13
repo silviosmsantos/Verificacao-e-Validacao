@@ -7,6 +7,7 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 
+from catalog.forms.userProfiile_form import UserProfileForm
 from core.models.company_models import Company
 from core.services.user_service import UserService
 
@@ -86,3 +87,19 @@ def profile_view(request):
 @login_required
 def settings_view(request):
     return render(request, 'settings.html')
+
+@login_required
+def profile_view(request):
+    user = request.user
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=user)
+        if form.is_valid():
+            data = form.cleaned_data
+            UserService.update_user(user.id, data)
+            return redirect('profile') 
+
+    else:
+        form = UserProfileForm(instance=user)
+
+    return render(request, 'profile.html', {'form': form})
