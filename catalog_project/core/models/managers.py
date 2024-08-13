@@ -1,4 +1,4 @@
-# core/managers.py
+# core/models/managers.py
 from django.contrib.auth.models import BaseUserManager
 
 class CustomUserManager(BaseUserManager):

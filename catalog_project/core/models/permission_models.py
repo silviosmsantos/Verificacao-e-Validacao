@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from .base_model import BaseModel
 from .user_models import User
@@ -10,7 +11,7 @@ class Permission(BaseModel):
         blank=False,
         validators=[validate_permission_name]
     )
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='permission_users')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
     class Meta:
         verbose_name = "Permission"
         verbose_name_plural = "Permissions"

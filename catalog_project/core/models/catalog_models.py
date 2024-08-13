@@ -1,7 +1,7 @@
+from django.conf import settings
 from django.db import models
 from core.models.base_model import BaseModel
 from core.models.company_models import Company
-from core.models.user_models import User
 
 class Catalog(BaseModel):
     STATUS_CHOICES = [
@@ -18,7 +18,7 @@ class Catalog(BaseModel):
         blank=False
     )
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=False, blank=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
 
     class Meta:
         verbose_name = "Catalog"
