@@ -8,7 +8,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         fake = Faker()
-        email = "alisonfr83@gmail.com"
+        email = fake.email
 
         if User.objects.filter(email=email).exists():
             self.stdout.write(self.style.WARNING(f'User with email {email} already exists.'))
@@ -24,6 +24,6 @@ class Command(BaseCommand):
                 status='active',
                 company=company
             )
-            user.set_password("pGw5S20pT@")
+            user.set_password(fake.password)
             user.save()
 
