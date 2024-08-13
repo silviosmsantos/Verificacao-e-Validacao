@@ -9,7 +9,7 @@ class BaseModel(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     modified_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,  # Atualizado para usar settings.AUTH_USER_MODEL
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         null=True,
         blank=True,

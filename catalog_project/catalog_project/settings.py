@@ -1,4 +1,5 @@
 from datetime import timedelta
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -37,7 +38,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
 ]
 
-
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 # Autenticação
@@ -50,9 +50,7 @@ ROOT_URLCONF = 'catalog_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            BASE_DIR / 'catalog' / 'templates',
-        ],
+        'DIRS': [os.path.join(BASE_DIR, 'catalog/templates')],
         'APP_DIRS': True,  # Habilita a busca de templates dentro das pastas das apps
         'OPTIONS': {
             'context_processors': [
@@ -116,6 +114,15 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = 'core.User'
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+# Create configuration send email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.example.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'your_email@example.com'
+EMAIL_HOST_PASSWORD = 'your_password'
+
 
 # Configurações de idioma e fuso horário
 LANGUAGE_CODE = "pt-br"
