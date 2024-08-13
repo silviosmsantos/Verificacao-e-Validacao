@@ -1,17 +1,21 @@
-# catalog/views.py
 from django.shortcuts import render, redirect
 from catalog.forms.login_form import LoginForm
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from catalog.forms.register_form import RegisterForm
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse_lazy
+
+from core.models.company_models import Company
+from core.services.user_service import UserService
 
 def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            login(request, user)  # Certifique-se de usar a função 'login' do Django
+            login(request, user)
             messages.success(request, f'Bem-vindo(a), {user.email}')
             return redirect('home')
         else:
@@ -21,16 +25,50 @@ def login_view(request):
     return render(request, 'login.html', {'form': form})
 
 def register_view(request):
-    # Supondo que você tenha um formulário de registro
     form = RegisterForm(request.POST or None)
     if form.is_valid():
-        form.save()
-        return redirect('login')
+        company_name = form.cleaned_data.get('company')
+        if company_name:
+            company = Company.objects.filter(name=company_name).first()
+            if not company:
+                return render(request, 'register.html', {'form': form, 'error': 'Company does not exist'})
+        else:
+            company = None
+        try:
+            user_data = {
+                'name': form.cleaned_data['name'],
+                'email': form.cleaned_data['email'],
+                'phone': form.cleaned_data['phone'],
+                'password': form.cleaned_data['password'],
+                'status': form.cleaned_data['status'],
+                'company': company.pk if company else None
+            }
+            UserService.create_user(user_data)
+            return redirect('login')
+        except Exception as e:
+            return render(request, 'register.html', {'form': form, 'error': 'Error creating user'})
+    
     return render(request, 'register.html', {'form': form})
+
+
+
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    template_name = 'catalog/reset_password_done.html'
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'catalog/reset_password.html'
+    email_template_name = 'catalog/reset_password_email.html'
+    success_url = reverse_lazy('password_reset_done')
+    
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'catalog/reset_password_confirm.html'
+    success_url = reverse_lazy('password_reset_complete')
+
+class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = 'catalog/reset_password_complete.html'
 
 @login_required
 def home_view(request):
-    print(request.user)
     return render(request, 'home.html', {'user': request.user})
 
 def catalog_view(request):

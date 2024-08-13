@@ -9,6 +9,7 @@ class Company(BaseModel):
     ]
 
     name = models.CharField(
+        unique=True,
         max_length=255,
         validators=[validate_company_name]
     )
@@ -21,3 +22,6 @@ class Company(BaseModel):
     class Meta:
         verbose_name = "Company"
         verbose_name_plural = "Companies"
+
+    def __str__(self):
+        return self.name

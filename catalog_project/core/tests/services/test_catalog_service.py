@@ -1,4 +1,3 @@
-# core/tests/services/test_catalog_service.py
 from django.test import TestCase
 from core.models.catalog_models import Catalog
 from core.models.company_models import Company

@@ -1,4 +1,3 @@
-# core/tests/test_user_service.py
 from django.test import TestCase
 from core.services.user_service import UserService
 from core.models.user_models import User
@@ -6,10 +5,7 @@ from core.models.company_models import Company
 
 class UserServiceTest(TestCase):
     def setUp(self):
-        # Criação de uma empresa para associar ao usuário
         self.company = Company.objects.create(name='Test Company', status='active')
-        
-        # Criação de um usuário com senha criptografada
         self.user = User.objects.create(
             name='Test User',
             email='test@example.com',
