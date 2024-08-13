@@ -71,14 +71,18 @@ class CustomPasswordResetCompleteView(PasswordResetCompleteView):
 def home_view(request):
     return render(request, 'home.html', {'user': request.user})
 
+@login_required
 def catalog_view(request):
     return render(request, 'catalog.html')
 
+@login_required
 def messages_view(request):
     return render(request, 'messages.html')
 
+@login_required
 def profile_view(request):
     return render(request, 'profile.html')
 
+@login_required
 def settings_view(request):
     return render(request, 'settings.html')
