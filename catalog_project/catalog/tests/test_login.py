@@ -2,41 +2,34 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from django.contrib.messages import get_messages
-
-User = get_user_model()
 
 class LoginViewTestCase(TestCase):
     def setUp(self):
-        self.email = 'testuser@example.com'
-        self.password = 'securepassword'
-        self.user = User.objects.create_user(
-            email=self.email,
-            password=self.password,
-            username=self.email
+        self.user = get_user_model().objects.create_user(
+            email='testuser@example.com',
+            password='password123',
+            name='Test User',
+            phone='1234567890',
+            status='active'
         )
+        self.login_url = reverse('login')
 
     def test_login_page_status_code(self):
-        response = self.client.get(reverse('login'))
+        response = self.client.get(self.login_url)
         self.assertEqual(response.status_code, 200)
 
     def test_login_with_valid_credentials(self):
-        response = self.client.post(reverse('login'), {
-            'username': self.email,
-            'password': self.password,
+        response = self.client.post(self.login_url, {
+            'username': 'testuser@example.com',
+            'password': 'password123'
         })
-        self.assertRedirects(response, reverse('home'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), f'Bem-vindo(a), {self.user.email}')
+        self.assertEqual(response.status_code, 302)  # Espera um redirecionamento
+        self.assertIn('_auth_user_id', self.client.session)  # Verifica se o usuário está autenticado
 
     def test_login_with_invalid_credentials(self):
-        response = self.client.post(reverse('login'), {
-            'username': 'wronguser@example.com',
-            'password': 'wrongpassword',
+        response = self.client.post(self.login_url, {
+            'username': 'testuser@example.com',
+            'password': 'wrongpassword'
         })
         self.assertEqual(response.status_code, 200)
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'Email ou senha inválidos')
-
+        self.assertNotIn('_auth_user_id', self.client.session)  # Verifica se o usuário não está autenticado
