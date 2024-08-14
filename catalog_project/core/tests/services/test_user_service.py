@@ -6,7 +6,7 @@ from core.models.company_models import Company
 class UserServiceTest(TestCase):
     def setUp(self):
         self.company = Company.objects.create(name='Test Company', status='active')
-        self.user = User.objects.create(
+        self.user = User.objects.create_user(
             name='Test User',
             email='test@example.com',
             phone='1234567890',
@@ -39,9 +39,11 @@ class UserServiceTest(TestCase):
         self.assertTrue(user.check_password('newpassword'))
 
     def test_update_user(self):
-        data = {'name': 'Updated User'}
+        data = {'name': 'Updated User', 'email': 'updated@example.com', 'company': None}
         user = UserService.update_user(self.user.id, data)
         self.assertEqual(user.name, 'Updated User')
+        self.assertEqual(user.email, 'test@example.com')  
+        self.assertEqual(user.company, self.company)      
 
     def test_delete_user(self):
         UserService.delete_user(self.user.id)

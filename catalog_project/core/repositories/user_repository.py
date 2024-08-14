@@ -1,4 +1,3 @@
-# core/repositories/user_repository.py
 from core.models.company_models import Company
 from core.models.user_models import User
 
@@ -36,8 +35,11 @@ class UserRepository:
     def update_user(user_id, data):
         user = User.objects.filter(id=user_id).first()
         if user:
+            # Atualiza apenas os campos permitidos
+            allowed_fields = ['name', 'phone', 'status']
             for attr, value in data.items():
-                setattr(user, attr, value)
+                if attr in allowed_fields:
+                    setattr(user, attr, value)
             user.save()
         return user
 

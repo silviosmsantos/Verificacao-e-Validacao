@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from catalog.forms.login_form import LoginForm
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+from catalog.forms.profile_form import ProfileForm
 from catalog.forms.register_form import RegisterForm
 from django.contrib import messages
 from django.contrib.auth import login
@@ -93,13 +94,25 @@ def profile_view(request):
     user = request.user
 
     if request.method == 'POST':
-        form = UserProfileForm(request.POST, instance=user)
+        form = ProfileForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            UserService.update_user(user.id, data)
+            data_to_update = {
+                'name': data.get('name'),
+                'phone': data.get('phone'),
+                'status': data.get('status')
+            }
+            UserService.update_user(user.id, data_to_update)
+            messages.success(request, 'Perfil atualizado com sucesso!')
             return redirect('profile') 
-
     else:
-        form = UserProfileForm(instance=user)
+        initial_data = {
+            'name': user.name,
+            'email': user.email,
+            'phone': user.phone,
+            'status': user.status,
+            'company': user.company
+        }
+        form = ProfileForm(initial=initial_data)
 
     return render(request, 'profile.html', {'form': form})
