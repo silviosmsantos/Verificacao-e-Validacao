@@ -49,7 +49,7 @@ def login_view(request):
 def register_view(request):
     form = RegisterForm(request.POST or None)
     if form.is_valid():
-        company = form.cleaned_data.get('company')  # Pode ser None se não selecionado
+        company = form.cleaned_data.get('company')
         try:
             user_data = {
                 'name': form.cleaned_data['name'],
@@ -57,7 +57,7 @@ def register_view(request):
                 'phone': form.cleaned_data['phone'],
                 'password': form.cleaned_data['password'],
                 'status': form.cleaned_data['status'],
-                'company': company  # Pode ser None
+                'company': company
             }
             UserService.create_user(user_data)
             return redirect('login')
