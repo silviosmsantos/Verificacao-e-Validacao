@@ -1,4 +1,3 @@
-# core/tests/test_user_repository.py
 from django.test import TestCase
 from core.repositories.user_repository import UserRepository
 from core.models.user_models import User
@@ -7,7 +6,6 @@ from core.models.company_models import Company
 class UserRepositoryTest(TestCase):
     def setUp(self):
         self.company = Company.objects.create(name='Test Company', status='active')
-        
         self.user = User.objects.create_user(
             email='test@example.com',
             password='password',
@@ -40,9 +38,11 @@ class UserRepositoryTest(TestCase):
         self.assertTrue(user.check_password('newpassword'))
 
     def test_update_user(self):
-        data = {'name': 'Updated User'}
+        data = {'name': 'Updated User', 'email': 'updated@example.com', 'company': None}
         user = UserRepository.update_user(self.user.id, data)
         self.assertEqual(user.name, 'Updated User')
+        self.assertEqual(user.email, 'test@example.com')
+        self.assertEqual(user.company, self.company)       
 
     def test_delete_user(self):
         UserRepository.delete_user(self.user.id)
