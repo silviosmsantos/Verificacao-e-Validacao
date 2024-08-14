@@ -1,0 +1,42 @@
+<!-- catalog/templates/user_permission.html -->
+{% extends 'base.html' %} {% block content %}
+<div class="container mt-4">
+  <h1 class="mb-4">Permissões do Usuário</h1>
+
+  <div class="card">
+    <div class="card-header">
+      <h2 class="h5">Permissões Atuais</h2>
+    </div>
+    <div class="card-body">
+      {% if permissions %}
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">Permissão</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user_permission in permissions %}
+          <tr>
+            <td>{{ user_permission.permission.name }}</td>
+            <td>
+              <span
+                class="badge {% if user_permission.permission.status == 'active' %} bg-success {% elif user_permission.permission.status == 'inactive' %} bg-secondary {% else %} bg-light {% endif %}"
+              >
+                {{ user_permission.permission.status|capfirst }}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="alert alert-info" role="alert">
+        Nenhuma permissão encontrada.
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

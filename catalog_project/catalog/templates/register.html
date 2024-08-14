@@ -1,63 +1,128 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Registrar-se</title>
     <!-- Carregar o CSS do Bootstrap -->
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
     <style>
-      body {
-        background-image: url("{% static 'images/backgoud-site.jpg' %}");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .card {
-        max-width: 400px;
-        padding: 20px;
-        background-color: rgba(255, 255, 255, 0.85);
-        border-radius: 8px;
-      }
-      .extra-links {
-        margin-top: 15px;
-      }
-      .extra-links a {
-        display: block;
-        text-align: center;
-        margin-top: 5px;
-        color: #007bff;
-        text-decoration: none;
-      }
-      .extra-links a:hover {
-        text-decoration: underline;
-      }
+        body {
+            background-image: url("{% static 'images/backgoud-site.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card {
+            max-width: 800px; /* Aumentar a largura máxima do card */
+            width: 100%;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .extra-links {
+            margin-top: 15px;
+        }
+        .extra-links a {
+            display: block;
+            text-align: center;
+            margin-top: 5px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .extra-links a:hover {
+            text-decoration: underline;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <div class="card">
-      <h2 class="text-center">Registrar-se</h2>
-      {% if messages %}
-      <div class="alert alert-danger">
-        {% for message in messages %} {{ message }} {% endfor %}
-      </div>
-      {% endif %}
-      <form method="post">
-        {% csrf_token %} {{ form.as_p }}
-        <div class="text-center">
-          <button type="submit" class="btn btn-primary">Registrar</button>
+        <h2 class="text-center mb-4">Registrar-se</h2>
+        {% if messages %}
+        <div class="alert alert-danger">
+            {% for message in messages %} {{ message }} {% endfor %}
         </div>
-      </form>
-      <div class="extra-links">
-        <a href="{% url 'login' %}">Voltar para Login</a>
-      </div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.name.id_for_label }}">Nome</label>
+                        <input type="text" name="{{ form.name.name }}" id="{{ form.name.id_for_label }}" class="form-control" value="{{ form.name.value|default_if_none:'' }}" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.email.id_for_label }}">E-mail</label>
+                        <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}" class="form-control" value="{{ form.email.value|default_if_none:'' }}" />
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.phone.id_for_label }}">Telefone</label>
+                        <input type="text" name="{{ form.phone.name }}" id="{{ form.phone.id_for_label }}" class="form-control" value="{{ form.phone.value|default_if_none:'' }}" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.password.id_for_label }}">Senha</label>
+                        <input type="password" name="{{ form.password.name }}" id="{{ form.password.id_for_label }}" class="form-control" value="{{ form.password.value|default_if_none:'' }}" />
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.password_confirm.id_for_label }}">Confirmar Senha</label>
+                        <input type="password" name="{{ form.password_confirm.name }}" id="{{ form.password_confirm.id_for_label }}" class="form-control" value="{{ form.password_confirm.value|default_if_none:'' }}" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.status.id_for_label }}">Status</label>
+                        <select name="{{ form.status.name }}" id="{{ form.status.id_for_label }}" class="form-control">
+                            {% for choice in form.status.field.choices %}
+                                <option value="{{ choice.0 }}" {% if choice.0 == form.status.value %}selected{% endif %}>{{ choice.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-12">
+                  <div class="form-group">
+                      <label for="{{ form.company.id_for_label }}">Empresa (opcional)</label>
+                      <select name="{{ form.company.name }}" id="{{ form.company.id_for_label }}" class="form-control">
+                          <option value="" {% if form.company.value == "" %}selected{% endif %}>Nenhuma empresa</option>
+                          {% for choice in form.company.field.queryset %}
+                              <option value="{{ choice.id }}" {% if choice.id == form.company.value %}selected{% endif %}>{{ choice.name }}</option>
+                          {% endfor %}
+                      </select>
+                  </div>
+              </div>
+          </div>
+          
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Registrar</button>
+            </div>
+        </form>
+        <div class="extra-links">
+            <a href="{% url 'login' %}">Voltar para Login</a>
+        </div>
     </div>
     <!-- Carregar o JS do Bootstrap -->
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-  </body>
+</body>
 </html>
