@@ -1,4 +1,6 @@
 from core.models.company_models import Company
+from core.models.permission_models import Permission
+from core.models.userPermission import UserPermission
 from core.models.user_models import User
 
 class UserRepository:
@@ -15,13 +17,12 @@ class UserRepository:
         company_id = data.get('company')
         profile = data.get('profile')
 
-        # Validar se a empresa existe
         if company_id:
             company = Company.objects.filter(id=company_id).first()
             if not company:
-                raise ValueError("Company with the given ID does not exist")
+                raise ValueError("A empresa especificada não existe.")
         else:
-            raise ValueError("Company is required")
+            raise ValueError("A empresa é obrigatoria.")
 
         user = User.objects.create_user(
             name=data['name'],
@@ -32,6 +33,12 @@ class UserRepository:
             company=company,
             profile=profile
         )
+
+        if profile == 'admin':
+            permissions = Permission.objects.all()
+            for permission in permissions:
+                UserPermission.objects.create(user=user, permission=permission)
+
         return user
 
     @staticmethod

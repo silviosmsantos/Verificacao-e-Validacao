@@ -21,38 +21,32 @@ class Command(BaseCommand):
 
 def create_companies():
     companies = []
-    existing_companies = Company.objects.all().count()
-    if existing_companies == 0:
-        for _ in range(5):
-            company, created = Company.objects.get_or_create(
-                name=fake.company(),
-                defaults={'status': random.choice(['active', 'inactive'])}
-            )
-            companies.append(company)
-    else:
-        companies = Company.objects.all()
+    for _ in range(5):
+        company_name = fake.company()
+        company, created = Company.objects.get_or_create(
+            name=company_name,
+            defaults={'status': random.choice(['active', 'inactive'])}
+        )
+        companies.append(company)
     return companies
 
 def create_users(companies):
     users = []
-    existing_users = User.objects.all().count()
-    if existing_users == 0:
-        for _ in range(10):
-            user, created = User.objects.get_or_create(
-                email=fake.email(),
-                defaults={
-                    'name': fake.name(),
-                    'phone': fake.phone_number(),
-                    'status': 'active',
-                    'company': random.choice(companies)  
-                }
-            )
-            if created:
-                user.set_password('@123456') 
-                user.save()
-            users.append(user)
-    else:
-        users = User.objects.all()
+    for _ in range(10):
+        email = fake.email()
+        user, created = User.objects.get_or_create(
+            email=email,
+            defaults={
+                'name': fake.name(),
+                'phone': fake.phone_number(),
+                'status': 'active',
+                'company': random.choice(companies)
+            }
+        )
+        if created:
+            user.set_password('@123456')  # Define uma senha padrão
+            user.save()
+        users.append(user)
     return users
 
 def create_permissions():

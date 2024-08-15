@@ -4,7 +4,16 @@ from core.models.user_models import User
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['email', 'name', 'phone', 'status', 'company', 'profile']  # Inclua 'email' aqui
+        fields = ['email', 'name', 'phone', 'status', 'company', 'profile']
+        
+        labels = {
+            'email': 'E-mail',
+            'name': 'Nome',
+            'phone': 'Telefone',
+            'status': 'Status',
+            'company': 'Empresa',
+            'profile': 'Perfil',
+        }
 
         widgets = {
             'email': forms.EmailInput(attrs={'class': 'form-control', 'disabled': 'disabled'}),
@@ -21,4 +30,3 @@ class ProfileForm(forms.ModelForm):
         if user:
             self.fields['email'].initial = user.email
             self.fields['company'].initial = user.company
-

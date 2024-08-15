@@ -52,10 +52,6 @@ def register_view(request):
             company = form.cleaned_data.get('company')
             profile = form.cleaned_data.get('profile')
             
-            if not Company.objects.filter(id=company.id).exists():
-                messages.error(request, 'A empresa especificada não existe.')
-                return render(request, 'register.html', {'form': form})
-
             try:
                 user_data = {
                     'name': form.cleaned_data['name'],
@@ -63,7 +59,7 @@ def register_view(request):
                     'phone': form.cleaned_data['phone'],
                     'password': form.cleaned_data['password'],
                     'status': form.cleaned_data['status'],
-                    'company': company.pk,
+                    'company': company.pk, 
                     'profile': profile
                 }
                 UserService.create_user(user_data)
@@ -75,9 +71,6 @@ def register_view(request):
             messages.error(request, 'Por favor, corrija os erros abaixo.')
     else:
         form = RegisterForm()
-
-    return render(request, 'register.html', {'form': form})
-
     return render(request, 'register.html', {'form': form})
 
 @login_required
