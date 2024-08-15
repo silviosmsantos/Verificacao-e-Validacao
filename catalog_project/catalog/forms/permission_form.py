@@ -1,4 +1,3 @@
-# catalog/forms/permission_form.py
 from django import forms
 from core.models.permission_models import Permission
 

@@ -44,7 +44,7 @@ def create_users(companies):
                     'name': fake.name(),
                     'phone': fake.phone_number(),
                     'status': 'active',
-                    'company': random.choice(companies) if random.choice([True, False]) else None
+                    'company': random.choice(companies)  
                 }
             )
             if created:

@@ -12,14 +12,16 @@ class UserRepository:
 
     @staticmethod
     def create_user(data):
-        # Verifica se company_id está presente e é um número
         company_id = data.get('company')
+        profile = data.get('profile')
+
+        # Validar se a empresa existe
         if company_id:
-            company = Company.objects.filter(id=company_id).first()  # Obtém a instância da empresa
+            company = Company.objects.filter(id=company_id).first()
             if not company:
                 raise ValueError("Company with the given ID does not exist")
         else:
-            company = None
+            raise ValueError("Company is required")
 
         user = User.objects.create_user(
             name=data['name'],
@@ -27,21 +29,22 @@ class UserRepository:
             phone=data['phone'],
             password=data['password'],
             status=data['status'],
-            company=company
+            company=company,
+            profile=profile
         )
         return user
 
     @staticmethod
     def update_user(user_id, data):
-        user = User.objects.filter(id=user_id).first()
-        if user:
-            # Atualiza apenas os campos permitidos
-            allowed_fields = ['name', 'phone', 'status']
-            for attr, value in data.items():
-                if attr in allowed_fields:
-                    setattr(user, attr, value)
+        try:
+            user = User.objects.get(id=user_id)
+            for field, value in data.items():
+                if hasattr(user, field):
+                    setattr(user, field, value)
             user.save()
-        return user
+            return user
+        except User.DoesNotExist:
+            return None
 
     @staticmethod
     def delete_user(user_id):

@@ -12,7 +12,8 @@ class UserRepositoryTest(TestCase):
             name='Test User',
             phone='1234567890',
             status='active',
-            company=self.company
+            company=self.company,
+            profile='manager' 
         )
 
     def test_get_all_users(self):
@@ -30,19 +31,27 @@ class UserRepositoryTest(TestCase):
             'phone': '0987654321',
             'password': 'newpassword',
             'status': 'active',
-            'company': self.company.id
+            'company': self.company.id,
+            'profile': 'admin' 
         }
         user = UserRepository.create_user(data)
         self.assertEqual(user.name, 'New User')
         self.assertEqual(user.company, self.company)
+        self.assertEqual(user.profile, 'admin')  
         self.assertTrue(user.check_password('newpassword'))
 
     def test_update_user(self):
-        data = {'name': 'Updated User', 'email': 'updated@example.com', 'company': None}
+        data = {
+            'name': 'Updated User',
+            'email': 'updated@example.com',
+            'profile': 'admin'
+        }
         user = UserRepository.update_user(self.user.id, data)
         self.assertEqual(user.name, 'Updated User')
-        self.assertEqual(user.email, 'test@example.com')
-        self.assertEqual(user.company, self.company)       
+        self.assertEqual(user.email, 'updated@example.com')
+        self.assertEqual(user.profile, 'admin')
+        self.assertEqual(user.company, self.company) 
+
 
     def test_delete_user(self):
         UserRepository.delete_user(self.user.id)

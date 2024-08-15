@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from catalog.forms.login_form import LoginForm
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
-from catalog.forms.permission_form import PermissionForm
 from catalog.forms.profile_form import ProfileForm
 from catalog.forms.register_form import RegisterForm
 from django.contrib import messages
@@ -47,23 +46,38 @@ def login_view(request):
     return render(request, 'login.html', {'form': form})
 
 def register_view(request):
-    form = RegisterForm(request.POST or None)
-    if form.is_valid():
-        company = form.cleaned_data.get('company')
-        try:
-            user_data = {
-                'name': form.cleaned_data['name'],
-                'email': form.cleaned_data['email'],
-                'phone': form.cleaned_data['phone'],
-                'password': form.cleaned_data['password'],
-                'status': form.cleaned_data['status'],
-                'company': company
-            }
-            UserService.create_user(user_data)
-            return redirect('login')
-        except Exception as e:
-            return render(request, 'register.html', {'form': form, 'error': 'Erro ao criar o usuário'})
-    
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            company = form.cleaned_data.get('company')
+            profile = form.cleaned_data.get('profile')
+            
+            if not Company.objects.filter(id=company.id).exists():
+                messages.error(request, 'A empresa especificada não existe.')
+                return render(request, 'register.html', {'form': form})
+
+            try:
+                user_data = {
+                    'name': form.cleaned_data['name'],
+                    'email': form.cleaned_data['email'],
+                    'phone': form.cleaned_data['phone'],
+                    'password': form.cleaned_data['password'],
+                    'status': form.cleaned_data['status'],
+                    'company': company.pk,
+                    'profile': profile
+                }
+                UserService.create_user(user_data)
+                messages.success(request, 'Usuário criado com sucesso!')
+                return redirect('login')
+            except Exception as e:
+                messages.error(request, 'Erro ao criar o usuário.')
+        else:
+            messages.error(request, 'Por favor, corrija os erros abaixo.')
+    else:
+        form = RegisterForm()
+
+    return render(request, 'register.html', {'form': form})
+
     return render(request, 'register.html', {'form': form})
 
 @login_required
@@ -84,7 +98,6 @@ def profile_view(request):
 
 @login_required
 def list_permissions(request):
-    # Obtém as permissões do usuário logado
     user_permissions = UserPermission.objects.filter(user=request.user)
     
     return render(request, 'user_permission.html', {
@@ -97,25 +110,27 @@ def profile_view(request):
     user = request.user
 
     if request.method == 'POST':
-        form = ProfileForm(request.POST)
+        form = ProfileForm(request.POST, user=user)
         if form.is_valid():
             data = form.cleaned_data
             data_to_update = {
                 'name': data.get('name'),
                 'phone': data.get('phone'),
-                'status': data.get('status')
+                'status': data.get('status'),
+                'profile': data.get('profile')
             }
             UserService.update_user(user.id, data_to_update)
             messages.success(request, 'Perfil atualizado com sucesso!')
-            return redirect('profile') 
+            return redirect('profile')
     else:
         initial_data = {
             'name': user.name,
             'email': user.email,
             'phone': user.phone,
             'status': user.status,
-            'company': user.company
+            'company': user.company,
+            'profile': user.profile  
         }
-        form = ProfileForm(initial=initial_data)
+        form = ProfileForm(initial=initial_data, user=user)
 
     return render(request, 'profile.html', {'form': form})

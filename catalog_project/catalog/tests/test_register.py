@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.contrib.messages import get_messages
 from core.models.company_models import Company
 
 class RegisterViewTestCase(TestCase):
@@ -20,11 +21,13 @@ class RegisterViewTestCase(TestCase):
             'email': 'newuser@example.com',
             'phone': '1234567890',
             'password': 'newpassword123',
+            'password_confirm': 'newpassword123', 
             'status': 'active',
-            'company': self.company.pk  
+            'company': self.company.pk,  
+            'profile': 'manager'
         }
         response = self.client.post(self.register_url, data=valid_data)
-        self.assertEqual(response.status_code, 302)  
+        self.assertEqual(response.status_code, 302)
         
         user = get_user_model().objects.filter(email='newuser@example.com').first()
         self.assertIsNotNone(user)
@@ -37,9 +40,31 @@ class RegisterViewTestCase(TestCase):
             'email': 'invalidemail',
             'phone': '1234567890',
             'password': 'short',
+            'password_confirm': 'differentpassword',  
             'status': 'active',
-            'company': ''
+            'company': '', 
+            'profile': '' 
         }
         response = self.client.post(self.register_url, data=invalid_data)
         self.assertEqual(response.status_code, 200) 
+        
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(any(msg.message == 'Por favor, corrija os erros abaixo.' for msg in messages))
         self.assertFalse(get_user_model().objects.filter(email='invalidemail').exists())
+
+    def test_register_with_nonexistent_company(self):
+        data = {
+            'name': 'User with Nonexistent Company',
+            'email': 'usernonexistentcompany@example.com',
+            'phone': '1234567890',
+            'password': 'password123',
+            'password_confirm': 'password123',
+            'status': 'active',
+            'company': 999,  
+            'profile': 'user'  
+        }
+        response = self.client.post(self.register_url, data=data)
+        self.assertEqual(response.status_code, 200) 
+
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(any(msg.message == 'A empresa especificada não existe.' for msg in messages))

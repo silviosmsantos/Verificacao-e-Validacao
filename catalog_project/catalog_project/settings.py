@@ -114,21 +114,22 @@ LOGGING = {
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'level': 'DEBUG',
+            'level': 'INFO', 
         },
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'INFO',  
             'propagate': True,
         },
         'core': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'INFO', 
         },
     },
 }
+
 
 
 AUTH_USER_MODEL = 'core.User'
