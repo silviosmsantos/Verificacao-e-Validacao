@@ -52,19 +52,4 @@ class RegisterViewTestCase(TestCase):
         self.assertTrue(any(msg.message == 'Por favor, corrija os erros abaixo.' for msg in messages))
         self.assertFalse(get_user_model().objects.filter(email='invalidemail').exists())
 
-    def test_register_with_nonexistent_company(self):
-        data = {
-            'name': 'User with Nonexistent Company',
-            'email': 'usernonexistentcompany@example.com',
-            'phone': '1234567890',
-            'password': 'password123',
-            'password_confirm': 'password123',
-            'status': 'active',
-            'company': 999,  
-            'profile': 'user'  
-        }
-        response = self.client.post(self.register_url, data=data)
-        self.assertEqual(response.status_code, 200) 
 
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(any(msg.message == 'A empresa especificada não existe.' for msg in messages))

@@ -27,11 +27,11 @@
         height: 100%;
         padding: 20px;
         width: 230px;
-        position: fixed; /* Mantém o sidebar fixo */
+        position: fixed;
         top: 0;
         left: 0;
         bottom: 0;
-        overflow-y: auto; /* Permite rolagem se o conteúdo for muito longo */
+        overflow-y: auto;
       }
       .sidebar .nav-link {
         color: #fff;
@@ -43,7 +43,7 @@
       }
       .content {
         width: 100%;
-        margin-left: 230px; /* Adiciona uma margem para o espaço do sidebar */
+        margin-left: 230px;
         padding: 20px;
         background-color: rgba(255, 255, 255, 0.85);
         height: 100vh; /* Ocupa a altura total da viewport */
@@ -59,7 +59,7 @@
             <a class="nav-link" href="{% url 'home' %}">Inicio</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'catalog_list' %}">Catalog</a>
+            <a class="nav-link" href="{% url 'catalog_list' %}">Catalogo</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'messages' %}">Mensagens</a>
