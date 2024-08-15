@@ -1,14 +1,20 @@
-# catalog/tests/test_password_reset.py
 from django.test import TestCase
 from django.urls import reverse
 from django.core import mail
-from core.models import User  # Atualize para usar o modelo de usuário personalizado
+from core.models import User
+from core.models.company_models import Company
 
 class PasswordResetTestCase(TestCase):
     def setUp(self):
+        self.company = Company.objects.create(name='Test Company', status='active')
         self.user = User.objects.create_user(
+            name='Test User',
+            phone='1234567890',
+            status='active',
             email='testuser@example.com',
-            password='securepassword'
+            password='securepassword',
+            company=self.company,
+            profile='manager' 
         )
 
     def test_password_reset_request(self):

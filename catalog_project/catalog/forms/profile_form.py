@@ -1,36 +1,24 @@
 from django import forms
-from core.models.company_models import Company
+from core.models.user_models import User
 
-class ProfileForm(forms.Form):
-    name = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome'}),
-        label="Nome"
-    )
-    email = forms.EmailField(
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'disabled': 'disabled'}),
-        label="E-mail",
-        required=False  # Define como não obrigatório para evitar mensagens de erro
-    )
-    phone = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Telefone'}),
-        label="Telefone"
-    )
-    status = forms.ChoiceField(
-        choices=[('active', 'Ativo'), ('inactive', 'Inativo')],
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        label="Status"
-    )
-    company = forms.ModelChoiceField(
-        queryset=Company.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control', 'disabled': 'disabled'}),
-        label="Empresa",
-        required=False  # Define como não obrigatório para evitar mensagens de erro
-    )
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['email', 'name', 'phone', 'status', 'company', 'profile']  # Inclua 'email' aqui
 
-    def clean_email(self):
-        # Retorna o valor inicial do email se o campo estiver desativado
-        return self.initial.get('email', '')
+        widgets = {
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'disabled': 'disabled'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Telefone'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+            'company': forms.Select(attrs={'class': 'form-control', 'disabled': 'disabled'}),
+            'profile': forms.Select(attrs={'class': 'form-control'}),
+        }
 
-    def clean_company(self):
-        # Retorna o valor inicial da empresa se o campo estiver desativado
-        return self.initial.get('company', '')
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['email'].initial = user.email
+            self.fields['company'].initial = user.company
+

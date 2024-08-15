@@ -10,47 +10,9 @@ from django.urls import reverse_lazy
 
 from catalog.forms.userProfiile_form import UserProfileForm
 from core.models.company_models import Company
+from core.models.permission_models import Permission
+from core.models.userPermission import UserPermission
 from core.services.user_service import UserService
-
-def login_view(request):
-    if request.method == 'POST':
-        form = LoginForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            messages.success(request, f'Bem-vindo(a), {user.email}')
-            return redirect('home')
-        else:
-            messages.error(request, 'Email ou senha inválidos')
-    else:
-        form = LoginForm()
-    return render(request, 'login.html', {'form': form})
-
-def register_view(request):
-    form = RegisterForm(request.POST or None)
-    if form.is_valid():
-        company_name = form.cleaned_data.get('company')
-        if company_name:
-            company = Company.objects.filter(name=company_name).first()
-            if not company:
-                return render(request, 'register.html', {'form': form, 'error': 'Company does not exist'})
-        else:
-            company = None
-        try:
-            user_data = {
-                'name': form.cleaned_data['name'],
-                'email': form.cleaned_data['email'],
-                'phone': form.cleaned_data['phone'],
-                'password': form.cleaned_data['password'],
-                'status': form.cleaned_data['status'],
-                'company': company.pk if company else None
-            }
-            UserService.create_user(user_data)
-            return redirect('login')
-        except Exception as e:
-            return render(request, 'register.html', {'form': form, 'error': 'Error creating user'})
-    
-    return render(request, 'register.html', {'form': form})
 
 
 
@@ -68,6 +30,55 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
 
 class CustomPasswordResetCompleteView(PasswordResetCompleteView):
     template_name = 'catalog/reset_password_complete.html'
+    
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            messages.success(request, f'Bem-vindo(a), {user.email}')
+            return redirect('home')
+        else:
+            messages.error(request, 'Email ou senha inválidos')
+    else:
+        form = LoginForm()
+    return render(request, 'login.html', {'form': form})
+
+def register_view(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            company = form.cleaned_data.get('company')
+            profile = form.cleaned_data.get('profile')
+            
+            if not Company.objects.filter(id=company.id).exists():
+                messages.error(request, 'A empresa especificada não existe.')
+                return render(request, 'register.html', {'form': form})
+
+            try:
+                user_data = {
+                    'name': form.cleaned_data['name'],
+                    'email': form.cleaned_data['email'],
+                    'phone': form.cleaned_data['phone'],
+                    'password': form.cleaned_data['password'],
+                    'status': form.cleaned_data['status'],
+                    'company': company.pk,
+                    'profile': profile
+                }
+                UserService.create_user(user_data)
+                messages.success(request, 'Usuário criado com sucesso!')
+                return redirect('login')
+            except Exception as e:
+                messages.error(request, 'Erro ao criar o usuário.')
+        else:
+            messages.error(request, 'Por favor, corrija os erros abaixo.')
+    else:
+        form = RegisterForm()
+
+    return render(request, 'register.html', {'form': form})
+
+    return render(request, 'register.html', {'form': form})
 
 @login_required
 def home_view(request):
@@ -86,33 +97,40 @@ def profile_view(request):
     return render(request, 'profile.html')
 
 @login_required
-def settings_view(request):
-    return render(request, 'settings.html')
+def list_permissions(request):
+    user_permissions = UserPermission.objects.filter(user=request.user)
+    
+    return render(request, 'user_permission.html', {
+        'permissions': user_permissions
+    })
+
 
 @login_required
 def profile_view(request):
     user = request.user
 
     if request.method == 'POST':
-        form = ProfileForm(request.POST)
+        form = ProfileForm(request.POST, user=user)
         if form.is_valid():
             data = form.cleaned_data
             data_to_update = {
                 'name': data.get('name'),
                 'phone': data.get('phone'),
-                'status': data.get('status')
+                'status': data.get('status'),
+                'profile': data.get('profile')
             }
             UserService.update_user(user.id, data_to_update)
             messages.success(request, 'Perfil atualizado com sucesso!')
-            return redirect('profile') 
+            return redirect('profile')
     else:
         initial_data = {
             'name': user.name,
             'email': user.email,
             'phone': user.phone,
             'status': user.status,
-            'company': user.company
+            'company': user.company,
+            'profile': user.profile  
         }
-        form = ProfileForm(initial=initial_data)
+        form = ProfileForm(initial=initial_data, user=user)
 
     return render(request, 'profile.html', {'form': form})

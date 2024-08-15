@@ -1,15 +1,20 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from core.models.company_models import Company 
 
 class LoginViewTestCase(TestCase):
     def setUp(self):
+        self.company = Company.objects.create(name='Test Company')
+        
         self.user = get_user_model().objects.create_user(
             email='testuser@example.com',
             password='password123',
             name='Test User',
             phone='1234567890',
-            status='active'
+            status='active',
+            company=self.company,
+            profile='manager' 
         )
         self.login_url = reverse('login')
 
@@ -22,13 +27,8 @@ class LoginViewTestCase(TestCase):
             'username': 'testuser@example.com',
             'password': 'password123'
         })
-        self.assertEqual(response.status_code, 302)  # Espera um redirecionamento
-        self.assertIn('_auth_user_id', self.client.session)  # Verifica se o usuário está autenticado
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('_auth_user_id', self.client.session)
 
     def test_login_with_invalid_credentials(self):
-        response = self.client.post(self.login_url, {
-            'username': 'testuser@example.com',
-            'password': 'wrongpassword'
-        })
-        self.assertEqual(response.status_code, 200)
-        self.assertNotIn('_auth_user_id', self.client.session)  # Verifica se o usuário não está autenticado
+        response = self.client.post

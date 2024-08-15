@@ -2,11 +2,21 @@ from django.test import TestCase
 from core.models.user_models import User
 from core.models.audit_log import AuditLog
 from core.services.audit_log_service import AuditLogService
+from core.models.company_models import Company
 
 class AuditLogServiceTest(TestCase):
 
     def setUp(self):
-        self.user = User.objects.create(name="Test User", email="test@example.com", phone="123456789", password="password")
+        self.company = Company.objects.create(name='Test Company', status='active')
+        self.user = User.objects.create(
+            name="Test User",
+            email="test@example.com",
+            phone="123456789",
+            password="password",
+            status='active',
+            company=self.company, 
+            profile='manager'
+        )
         self.audit_log_data = {
             'action': 'create',
             'user': self.user
@@ -32,6 +42,7 @@ class AuditLogServiceTest(TestCase):
         updated_data = {'action': 'update', 'user': self.user}
         updated_log = AuditLogService.update_audit_log(audit_log.id, updated_data)
         self.assertEqual(updated_log.action, 'update')
+        self.assertEqual(updated_log.user, self.user)
 
     def test_delete_audit_log(self):
         audit_log = AuditLogService.create_audit_log(self.audit_log_data)

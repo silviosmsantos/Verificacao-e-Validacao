@@ -14,7 +14,8 @@ class MessageServiceTest(TestCase):
             phone='1234567890',
             password='password',
             status='active',
-            company=None
+            company=self.company,  
+            profile='manager' 
         )
         self.catalog = Catalog.objects.create(
             name='Test Catalog',
