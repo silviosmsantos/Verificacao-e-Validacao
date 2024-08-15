@@ -7,6 +7,12 @@
     <title>{% block title %}My Site{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
     <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        overflow: hidden; /* Garante que o overflow seja controlado pelo layout principal */
+      }
       .container-fluid {
         height: 100vh;
         display: flex;
@@ -21,6 +27,11 @@
         height: 100%;
         padding: 20px;
         width: 230px;
+        position: fixed; /* Mantém o sidebar fixo */
+        top: 0;
+        left: 0;
+        bottom: 0;
+        overflow-y: auto; /* Permite rolagem se o conteúdo for muito longo */
       }
       .sidebar .nav-link {
         color: #fff;
@@ -31,9 +42,12 @@
         border-radius: 8px;
       }
       .content {
-        flex: 1;
+        width: 100%;
+        margin-left: 230px; /* Adiciona uma margem para o espaço do sidebar */
         padding: 20px;
         background-color: rgba(255, 255, 255, 0.85);
+        height: 100vh; /* Ocupa a altura total da viewport */
+        overflow-y: auto; /* Permite rolagem vertical */
       }
     </style>
   </head>
@@ -48,7 +62,7 @@
             <a class="nav-link" href="{% url 'catalog_list' %}">Catalog</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'messages' %}">Messagens</a>
+            <a class="nav-link" href="{% url 'messages' %}">Mensagens</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'profile' %}">Perfil</a>
@@ -63,7 +77,7 @@
           </li>
         </ul>
       </nav>
-      <div class="content">
+      <div class="content mt-0 mb-0">
         {% block content %}
         <!-- Este bloco será substituído pelo conteúdo específico de cada página -->
         {% endblock %}
