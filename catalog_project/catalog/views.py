@@ -1,20 +1,16 @@
 from django.shortcuts import render, redirect
 from catalog.forms.login_form import LoginForm
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+from catalog.forms.message_form import MessageFilterForm
 from catalog.forms.profile_form import ProfileForm
 from catalog.forms.register_form import RegisterForm
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
-
-from catalog.forms.userProfiile_form import UserProfileForm
-from core.models.company_models import Company
-from core.models.permission_models import Permission
+from core.models.message_models import Message
 from core.models.userPermission import UserPermission
 from core.services.user_service import UserService
-
-
 
 class CustomPasswordResetDoneView(PasswordResetDoneView):
     template_name = 'catalog/reset_password_done.html'
@@ -23,7 +19,7 @@ class CustomPasswordResetView(PasswordResetView):
     template_name = 'catalog/reset_password.html'
     email_template_name = 'catalog/reset_password_email.html'
     success_url = reverse_lazy('password_reset_done')
-    
+
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):
     template_name = 'catalog/reset_password_confirm.html'
     success_url = reverse_lazy('password_reset_complete')
@@ -51,7 +47,7 @@ def register_view(request):
         if form.is_valid():
             company = form.cleaned_data.get('company')
             profile = form.cleaned_data.get('profile')
-            
+
             try:
                 user_data = {
                     'name': form.cleaned_data['name'],
@@ -83,7 +79,25 @@ def catalog_view(request):
 
 @login_required
 def messages_view(request):
-    return render(request, 'messages.html')
+    form = MessageFilterForm(request.GET or None)
+    messages = Message.objects.all()
+    
+    if form.is_valid():
+        nome = form.cleaned_data.get('nome')
+        email = form.cleaned_data.get('email')
+        phone = form.cleaned_data.get('phone')
+        sent_at = form.cleaned_data.get('sent_at')
+        
+        if nome:
+            messages = messages.filter(name__icontains=nome)
+        if email:
+            messages = messages.filter(email__icontains=email)
+        if phone:
+            messages = messages.filter(phone__icontains=phone)
+        if sent_at:
+            messages = messages.filter(sent_at__date=sent_at)
+    
+    return render(request, 'messages.html', {'messages': messages, 'form': form})
 
 @login_required
 def profile_view(request):
@@ -92,16 +106,13 @@ def profile_view(request):
 @login_required
 def list_permissions(request):
     user_permissions = UserPermission.objects.filter(user=request.user)
-    
     return render(request, 'user_permission.html', {
         'permissions': user_permissions
     })
 
-
 @login_required
 def profile_view(request):
     user = request.user
-
     if request.method == 'POST':
         form = ProfileForm(request.POST, user=user)
         if form.is_valid():
