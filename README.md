@@ -42,12 +42,8 @@
   python3 manage.py runserver
 ```
 
-### 7. Run tests for the core repositories and services layer
+### 7. Run tests application
 
 ```bash
-  python manage.py test core.tests.services
-```
-
-```bash
-  python manage.py test core.tests.repositories
+  python manage.py test
 ```
