@@ -21,33 +21,29 @@
 ### 4. Create Migrations for the Models:
 
 ```bash
-  python3 manage.py makemigrations
+  python manage.py makemigrations
 ```
 
 ### 5. Apply Migrations to the Database:
 
 ```bash
-  python3 manage.py migrate
+  python manage.py migrate
 ```
 
 ### 6. Create a Superuser:
 
 ```bash
-  python3 manage.py createsuperuser
+  python manage.py createsuperuser
 ```
 
 ### 7. Run the Development Server:
 
 ```bash
-  python3 manage.py runserver
+  python manage.py runserver
 ```
 
-### 7. Run tests for the core repositories and services layer
+### 7. Run tests application
 
 ```bash
-  python manage.py test core.tests.services
-```
-
-```bash
-  python manage.py test core.tests.repositories
+  python manage.py test
 ```
