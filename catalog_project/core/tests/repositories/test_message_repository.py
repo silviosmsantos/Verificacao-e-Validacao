@@ -15,7 +15,7 @@ class MessageRepositoryTest(TestCase):
             password='password',
             status='active',
             company=self.company,
-            profile='manager' 
+            profile='manager'
         )
         self.catalog = Catalog.objects.create(
             name='Test Catalog',
@@ -24,20 +24,27 @@ class MessageRepositoryTest(TestCase):
             user=self.user
         )
         self.message_data = {
+            'name': 'Client Name',
+            'email': 'client@example.com',
+            'phone': '1234567890',
             'content': 'Test message content',
-            'user': self.user,
             'catalog': self.catalog
         }
         self.message = MessageRepository.create_message(self.message_data)
 
     def test_create_message(self):
         message_data = {
+            'name': 'Another Client',
+            'email': 'anotherclient@example.com',
+            'phone': '0987654321',
             'content': 'Another test message',
-            'user': self.user,
             'catalog': self.catalog
         }
         message = MessageRepository.create_message(message_data)
         self.assertIsNotNone(message, "Message should be created")
+        self.assertEqual(message.name, 'Another Client', "Message name should match")
+        self.assertEqual(message.email, 'anotherclient@example.com', "Message email should match")
+        self.assertEqual(message.phone, '0987654321', "Message phone should match")
         self.assertEqual(message.content, 'Another test message', "Message content should match")
 
     def test_get_message_by_id(self):

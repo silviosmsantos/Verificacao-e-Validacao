@@ -1,4 +1,4 @@
-# core/services/message_service.py
+from django.core.exceptions import ValidationError
 from core.repositories.message_repository import MessageRepository
 from core.validators.message_validator import validate_message_data
 
@@ -14,8 +14,12 @@ class MessageService:
 
     @staticmethod
     def update_message(message_id, data):
-        validate_message_data(data, is_update=True)
-        return MessageRepository.update_message(message_id, data)
+        try:
+            validate_message_data(data, is_update=True)
+            return MessageRepository.update_message(message_id, data)
+        except ValidationError as e:
+            error_messages = list(e.messages)
+            raise ValueError(error_messages)
 
     @staticmethod
     def delete_message(message_id):

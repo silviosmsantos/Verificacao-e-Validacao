@@ -1,4 +1,3 @@
-# core/services/catalog_service.py
 from core.repositories.catalog_repository import CatalogRepository
 from core.validators.catalog_validator import validate_catalog_data
 

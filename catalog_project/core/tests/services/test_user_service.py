@@ -10,7 +10,6 @@ class UserServiceTest(TestCase):
         self.company = Company.objects.create(name='Test Company', status='active')
         self.permission1 = Permission.objects.create(name='Permission 1', status='active')
         self.permission2 = Permission.objects.create(name='Permission 2', status='active')
-        
         self.user = User.objects.create_user(
             email='test@example.com',
             password='password',
@@ -44,9 +43,7 @@ class UserServiceTest(TestCase):
         self.assertEqual(user.company, self.company)
         self.assertEqual(user.profile, 'admin')
         self.assertTrue(user.check_password('newpassword'))
-
         user_permissions = UserPermission.objects.filter(user=user)
-        # Verifica que as permissões corretas foram atribuídas
         self.assertIn(self.permission1, [up.permission for up in user_permissions])
         self.assertIn(self.permission2, [up.permission for up in user_permissions])
 

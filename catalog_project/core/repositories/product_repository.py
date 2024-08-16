@@ -1,6 +1,6 @@
 from core.models.product_models import Product
 from core.models.company_models import Company
-from core.models.category_models import Category  # Certifique-se de que o modelo Category está importado
+from core.models.category_models import Category
 
 class ProductRepository:
     @staticmethod
