@@ -5,4 +5,4 @@ class CoreConfig(AppConfig):
     name = 'core'
 
     def ready(self):
-        import core.signals  # Verifique se o import está correto
+        import core.signals
