@@ -7,7 +7,7 @@ from core.models.company_models import Company
 class RegisterViewTestCase(TestCase):
     def setUp(self):
         company_name = 'Test Company'
-        self.company, created = Company.objects.get_or_create(name=company_name, defaults={'status': 'active'})
+        self.company, _ = Company.objects.get_or_create(name=company_name, defaults={'status': 'active'})
         
         self.register_url = reverse('register')
 

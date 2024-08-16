@@ -1,6 +1,5 @@
 from django.db import models
 from .base_model import BaseModel 
-from ..validators.product_validator import validate_product_name
 from core.models.category_models import Category  # Certifique-se de que Category está importado
 
 class Product(BaseModel):
@@ -14,13 +13,12 @@ class Product(BaseModel):
         max_length=150, 
         null=False, 
         blank=False,
-        validators=[validate_product_name]
+        validators=[]
     )
     
     description = models.CharField(
         max_length=300,
         blank=True,
-        null=True,
     )
     
     price = models.DecimalField(
@@ -31,7 +29,6 @@ class Product(BaseModel):
     )
     
     image = models.CharField(
-        null=True,
         blank=True,
         max_length=400
     )

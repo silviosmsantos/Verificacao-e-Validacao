@@ -19,14 +19,14 @@ class Command(BaseCommand):
         permissions = create_permissions()
         assign_permissions_to_users(users, permissions)
         catalogs = create_catalogs(users, companies)
-        create_messages(users, catalogs)
+        create_messages(catalogs)
         self.stdout.write(self.style.SUCCESS('Database seeded successfully.'))
 
 def create_companies():
     companies = []
     for _ in range(5):
         company_name = fake.company()
-        company, created = Company.objects.get_or_create(
+        company, _ = Company.objects.get_or_create(
             name=company_name,
             defaults={'status': random.choice(['active', 'inactive'])}
         )
@@ -57,7 +57,7 @@ def create_permissions():
     permissions = []
     permission_names = ['Criar', 'Atualizar', 'Deletar']
     for name in permission_names:
-        permission, created = Permission.objects.get_or_create(name=name)
+        permission, _ = Permission.objects.get_or_create(name=name)
         permissions.append(permission)
     return permissions
 
@@ -73,7 +73,7 @@ def create_catalogs(users, companies):
     catalogs = []
     for _ in range(10):
         catalog_name = fake.word()
-        catalog, created = Catalog.objects.get_or_create(
+        catalog, _ = Catalog.objects.get_or_create(
             name=catalog_name,
             defaults={
                 'status': random.choice(['active', 'inactive']),
@@ -84,7 +84,7 @@ def create_catalogs(users, companies):
         catalogs.append(catalog)
     return catalogs
 
-def create_messages(users, catalogs):
+def create_messages(catalogs):
     for _ in range(20):
         message_content = fake.text(max_nb_chars=200)
         Message.objects.create(

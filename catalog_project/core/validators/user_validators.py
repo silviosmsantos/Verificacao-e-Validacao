@@ -8,7 +8,7 @@ def validate_password(value):
         raise ValidationError('A senha deve conter pelo menos uma letra maiúscula.')
     if not re.search(r'[a-z]', value):
         raise ValidationError('A senha deve conter pelo menos uma letra minúscula.')
-    if not re.search(r'[0-9]', value):
+    if not re.search(r'[\d]', value):
         raise ValidationError('A senha deve conter pelo menos um número.')
     if not re.search(r'[@$!%*?&]', value):
         raise ValidationError('A senha deve conter pelo menos um caractere especial: @$!%*?&')
