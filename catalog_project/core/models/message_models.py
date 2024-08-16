@@ -1,12 +1,14 @@
 from django.db import models
-from django.conf import settings
 from core.models.base_model import BaseModel
 from core.models.catalog_models import Catalog
+from core.validators.message_validator import validate_name, validate_phone
 
 class Message(BaseModel):
+    name = models.CharField(max_length=255, null=False, blank=False, validators=[validate_name])
+    email = models.EmailField(null=False, blank=False)
+    phone = models.CharField(max_length=20, null=False, blank=False, validators=[validate_phone])
     content = models.TextField(null=False, blank=False)
     sent_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
     catalog = models.ForeignKey(Catalog, on_delete=models.CASCADE, null=False, blank=False)
 
     class Meta:
@@ -14,4 +16,4 @@ class Message(BaseModel):
         verbose_name_plural = "Messages"
 
     def __str__(self):
-        return f'{self.content[:50]}... by {self.user.name} at {self.sent_at}'
+        return f'{self.name} ({self.email}) - {self.content[:50]}...'

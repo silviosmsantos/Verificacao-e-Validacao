@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}My Site{% endblock %}</title>
+    <title>{% block title %}Sistema de Catálogo{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
     <style>
       html,
@@ -59,7 +59,7 @@
             <a class="nav-link" href="{% url 'home' %}">Inicio</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'catalog_list' %}">Catalogo</a>
+            <a class="nav-link" href="{% url 'catalog_list' %}">Catálago</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'messages' %}">Mensagens</a>

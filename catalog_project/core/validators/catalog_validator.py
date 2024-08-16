@@ -1,4 +1,3 @@
-# core/validators/catalog_validator.py
 def validate_catalog_data(data, is_update=False):
     if not is_update:
         if 'name' not in data or not data['name']:
