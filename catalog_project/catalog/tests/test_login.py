@@ -29,6 +29,3 @@ class LoginViewTestCase(TestCase):
         })
         self.assertEqual(response.status_code, 302)
         self.assertIn('_auth_user_id', self.client.session)
-
-    def test_login_with_invalid_credentials(self):
-        response = self.client.post

@@ -61,7 +61,7 @@ def register_view(request):
                 UserService.create_user(user_data)
                 messages.success(request, 'Usuário criado com sucesso!')
                 return redirect('login')
-            except Exception as e:
+            except Exception:
                 messages.error(request, 'Erro ao criar o usuário.')
         else:
             messages.error(request, 'Por favor, corrija os erros abaixo.')

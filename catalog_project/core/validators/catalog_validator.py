@@ -1,19 +1,23 @@
 def validate_catalog_data(data, is_update=False):
+    def validate_presence(key, message):
+        if key not in data:
+            raise ValueError(message)
+    
+    def validate_non_empty(key, message):
+        if data.get(key) in [None, '']:
+            raise ValueError(message)
+    
+    def validate_non_none(key, message):
+        if data.get(key) is None:
+            raise ValueError(message)
+    
     if not is_update:
-        if 'name' not in data or not data['name']:
-            raise ValueError("Catalog must have a name")
-        if 'status' not in data:
-            raise ValueError("Catalog must have a status")
-        if 'company' not in data:
-            raise ValueError("Catalog must have an associated company")
-        if 'user' not in data:
-            raise ValueError("Catalog must have an associated user")
+        validate_presence('name', "Catalog must have a name")
+        validate_presence('status', "Catalog must have a status")
+        validate_presence('company', "Catalog must have an associated company")
+        validate_presence('user', "Catalog must have an associated user")
     else:
-        if 'name' in data and not data['name']:
-            raise ValueError("Catalog name cannot be empty")
-        if 'status' in data and not data['status']:
-            raise ValueError("Catalog status cannot be empty")
-        if 'company' in data and data['company'] is None:
-            raise ValueError("Catalog must have a valid company")
-        if 'user' in data and data['user'] is None:
-            raise ValueError("Catalog must have a valid user")
+        validate_non_empty('name', "Catalog name cannot be empty")
+        validate_non_empty('status', "Catalog status cannot be empty")
+        validate_non_none('company', "Catalog must have a valid company")
+        validate_non_none('user', "Catalog must have a valid user")
