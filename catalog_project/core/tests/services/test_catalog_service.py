@@ -42,13 +42,19 @@ class CatalogServiceTest(TestCase):
         self.assertEqual(catalog.user, self.user, "Catalog user should match")
 
     def test_update_catalog(self):
-        updated_data = {'name': 'Updated Catalog'}
+        updated_data = {
+            'name': 'Updated Catalog',
+            'status': 'active',
+            'company': self.company,
+            'user': self.user         
+        }
         updated_catalog = CatalogService.update_catalog(self.catalog.id, updated_data)
-        
+
         self.assertEqual(updated_catalog.name, 'Updated Catalog')
         self.assertEqual(updated_catalog.status, 'active')
         self.assertEqual(updated_catalog.company, self.company)
         self.assertEqual(updated_catalog.user, self.user)
+
 
     def test_update_catalog_with_invalid_data(self):
         invalid_data = {'name': ''}

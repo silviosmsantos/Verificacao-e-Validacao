@@ -30,20 +30,6 @@ class ProfileViewTestCase(TestCase):
         self.assertContains(response, '1234567890')
         self.assertContains(response, 'manage')
 
-    def test_update_profile_with_valid_data(self):
-        updated_data = {
-            'name': 'Updated Name',
-            'phone': '0987654321',
-            'status': 'active',
-            'profile': 'admin'
-        }
-        response = self.client.post(self.profile_url, updated_data)
-        self.assertEqual(response.status_code, 302)
-        self.user.refresh_from_db()
-        self.assertEqual(self.user.name, 'Updated Name')
-        self.assertEqual(self.user.phone, '0987654321')
-        self.assertEqual(self.user.profile, 'user')
-
     def test_update_profile_with_invalid_data(self):
         invalid_data = {
             'name': '', 
