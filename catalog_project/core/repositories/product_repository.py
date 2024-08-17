@@ -1,5 +1,3 @@
-# core/repositories/product_repository.py
-
 from core.models.product_models import Product
 
 class ProductRepository:
