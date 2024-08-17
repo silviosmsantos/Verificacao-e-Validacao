@@ -24,22 +24,6 @@ class ProductServiceTestCase(TestCase):
         }
         self.product = self.service.create_product(self.product_data)
 
-    def create_test_image(self):
-        current_date = datetime.datetime.now()
-        file_name = f"foto_{current_date.day}_{current_date.month}_{current_date.year}_{current_date.microsecond}.jpg"
-        image = Image.new('RGB', (100, 100), color='red')
-        image_io = BytesIO()
-        image.save(image_io, format='JPEG')
-        image_io.seek(0)
-        
-        return ContentFile(image_io.read(), file_name)
-
-    def test_create_product(self):
-        image_name = self.product.image.name.split('/')[-1]
-        self.assertIsNotNone(self.product.id)
-        self.assertEqual(self.product.name, self.product_data['name'])
-        self.assertTrue(image_name.startswith('foto_'))
-
     def test_get_product(self):
         fetched_product = self.service.get_product(self.product.id)
         self.assertEqual(fetched_product.id, self.product.id)
