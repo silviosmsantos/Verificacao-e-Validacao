@@ -12,6 +12,10 @@ class CatalogService:
         return CatalogRepository.get_catalog_by_id(catalog_id)
 
     @staticmethod
+    def list_all_catalogs():
+        return CatalogRepository.get_all_catalogs()
+
+    @staticmethod
     def update_catalog(catalog_id, data):
         validate_catalog_data(data, is_update=True)
         return CatalogRepository.update_catalog(catalog_id, data)

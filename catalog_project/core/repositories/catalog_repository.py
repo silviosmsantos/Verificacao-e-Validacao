@@ -13,6 +13,10 @@ class CatalogRepository:
             return None
 
     @staticmethod
+    def get_all_catalogs():
+        return Catalog.objects.all()
+
+    @staticmethod
     def update_catalog(catalog_id, data):
         catalog = CatalogRepository.get_catalog_by_id(catalog_id)
         if catalog:

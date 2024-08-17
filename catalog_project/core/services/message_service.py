@@ -4,6 +4,10 @@ from core.validators.message_validator import validate_message_data
 
 class MessageService:
     @staticmethod
+    def list_all_messages():
+        return MessageRepository.list_all_messages()
+    
+    @staticmethod
     def create_message(data):
         validate_message_data(data)
         return MessageRepository.create_message(data)

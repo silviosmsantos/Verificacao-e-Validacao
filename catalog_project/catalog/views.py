@@ -1,8 +1,12 @@
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+from catalog.forms.catalog_form import CatalogForm
 from catalog.forms.login_form import LoginForm
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from catalog.forms.message_form import MessageFilterForm
+from catalog.forms.product_form import ProductForm
 from catalog.forms.profile_form import ProfileForm
 from catalog.forms.register_form import RegisterForm
 from django.contrib import messages
@@ -12,6 +16,9 @@ from django.urls import reverse_lazy
 from core.models.catalog_models import Catalog
 from core.models.message_models import Message
 from core.models.userPermission import UserPermission
+from core.services.catalog_service import CatalogService
+from core.services.category_service import CategoryService
+from core.services.message_service import MessageService
 from core.services.user_service import UserService
 
 class CustomPasswordResetDoneView(PasswordResetDoneView):
@@ -84,7 +91,7 @@ def home_view(request):
 def catalog_list_view(request):
     name = request.GET.get('name', '')
     status = request.GET.get('status', '')
-    catalogs = Catalog.objects.all()
+    catalogs = CatalogService.list_all_catalogs()
     if name:
         catalogs = catalogs.filter(name__icontains=name)
     if status:
@@ -94,23 +101,51 @@ def catalog_list_view(request):
     }
     return render(request, 'catalog_list.html', context)
 
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def catalog_create_view(request):
+    if request.method == 'POST':
+        form = CatalogForm(request.POST)
+        if form.is_valid():
+            catalog_data = form.cleaned_data
+            catalog_data['user'] = request.user
+            catalog_data['company'] = request.user.company
+            try:
+                CatalogService.create_catalog(catalog_data)
+                messages.success(request, 'Catálogo criado com sucesso!')
+                return redirect('catalog_list')
+            except ValueError as e:
+                messages.error(request, f'Erro ao criar o catálogo: {e}')
+                return HttpResponseBadRequest(f'Erro: {e}')
+    else:
+        form = CatalogForm()
+
+    return render(request, 'catalog_create.html', {'form': form})
+
 @login_required
 @require_http_methods(["GET", "POST"])
 def catalog_delete_view(request, pk):
-    catalog = get_object_or_404(Catalog, pk=pk)
-    
-    if request.method == 'POST':
-        catalog.delete()
+    try:
+        catalog = get_object_or_404(Catalog, id=pk)  # Usa o UUID como id
+    except ValueError:
+        messages.error(request, 'Catálogo não encontrado. O valor fornecido não é um UUID válido.')
         return redirect('catalog_list')
-    
+
+    if request.method == 'POST':
+        CatalogService.delete_catalog(catalog.id)
+        messages.success(request, 'Catálogo excluído com sucesso!')
+        return redirect('catalog_list')
+
     return render(request, 'catalog_delete.html', {'catalog': catalog})
+
 
 # view de messages
 @login_required
 @require_http_methods(["GET"]) 
 def messages_list_view(request):
     form = MessageFilterForm(request.GET or None)
-    messages = Message.objects.all()
+    messages = MessageService.list_all_messages()
     
     if form.is_valid():
         nome = form.cleaned_data.get('nome')
@@ -165,3 +200,20 @@ def profile_view(request):
         form = ProfileForm(initial=initial_data, user=user)
 
     return render(request, 'profile.html', {'form': form})
+
+@csrf_exempt
+def product_create_view(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save()
+            return JsonResponse({
+                'success': True,
+                'product': {
+                    'name': product.name,
+                    'price': product.price,
+                }
+            })
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    return JsonResponse({'success': False, 'errors': 'Invalid request'})

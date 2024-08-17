@@ -20,3 +20,7 @@ class MessageRepository:
     @staticmethod
     def delete_message(message_id):
         Message.objects.get(id=message_id).delete()
+    
+    @staticmethod
+    def list_all_messages():
+        return Message.objects.all()
