@@ -1,6 +1,7 @@
 import os
 from django.db import models
 from catalog_project.settings import BASE_DIR
+from core.models.catalog_models import Catalog
 from core.validators.product_validators import validate_name, validate_description, validate_image
 from .base_model import BaseModel
 from core.models.category_models import Category
@@ -51,7 +52,15 @@ class Product(BaseModel):
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,
-        related_name='products',
+        related_name='products_category',
+        null=False,
+        blank=False
+    )
+
+    catalog = models.ForeignKey(
+        Catalog,
+        on_delete=models.CASCADE,
+        related_name='products_catalog',
         null=False,
         blank=False
     )

@@ -1,8 +1,15 @@
 from core.models.product_models import Product
-
 class ProductRepository:
     def create_product(self, data):
-        product = Product.objects.create(**data)
+        product = Product.objects.create(
+            name=data['name'],
+            description=data.get('description', ''),
+            price=data['price'],
+            image=data['image'],
+            status=data.get('status', 'active'),
+            category=data['category'],
+            catalog=data['catalog'] 
+        )
         return product
 
     def get_product(self, product_id):

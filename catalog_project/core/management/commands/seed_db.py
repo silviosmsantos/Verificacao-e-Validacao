@@ -94,3 +94,4 @@ def create_messages(catalogs):
             content=message_content,
             catalog=random.choice(catalogs)
         )
+
