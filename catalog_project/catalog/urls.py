@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import  catalog_create_view, catalog_delete_view, catalog_list_view, permissions_list_view, login_view, messages_list_view, product_create_view, profile_view, register_view, home_view
+from .views import  catalog_create_view, catalog_delete_view, catalog_list_view, message_delete_view, permissions_list_view, login_view, messages_list_view, product_create_view, profile_view, register_view, home_view
 from django.contrib.auth import views as auth_views
 
 
@@ -12,6 +12,7 @@ urlpatterns = [
     path('catalogs/delete/<uuid:pk>/', catalog_delete_view, name='catalog_delete'),
     path('product_create/', product_create_view, name='product_create'),
     path('messages_list/', messages_list_view, name='messages_list'),
+    path('message_delete/<uuid:message_id>/', message_delete_view, name='message_delete'),
     path('profile/', profile_view, name='profile'),
     path('permissions_list/', permissions_list_view, name='permissions_list'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),

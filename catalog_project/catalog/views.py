@@ -139,7 +139,6 @@ def catalog_delete_view(request, pk):
 
     return render(request, 'catalog_delete.html', {'catalog': catalog})
 
-
 # view de messages
 @login_required
 @require_http_methods(["GET"]) 
@@ -162,6 +161,19 @@ def messages_list_view(request):
             messages = messages.filter(sent_at__date=sent_at)
     
     return render(request, 'messages_list.html', {'messages': messages, 'form': form})
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def message_delete_view(request, message_id):
+    message = MessageService.get_message(message_id)
+    if not message:
+        messages.error(request, 'Mensagem não encontrada.')
+        return redirect('messages_list')
+    if request.method == 'POST':
+        MessageService.delete_message(message_id)
+        messages.success(request, 'Mensagem excluída com sucesso.')
+        return redirect('messages_list')
+    return render(request, 'messages_delete.html', {'message': message})
 
 @login_required
 @require_http_methods(["GET"]) 
