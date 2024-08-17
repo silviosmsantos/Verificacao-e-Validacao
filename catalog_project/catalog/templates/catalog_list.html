@@ -1,0 +1,59 @@
+{% extends 'base_sidebar.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1 class="mb-4">Página de Catálogos</h1>
+
+  <form method="get" class="row g-3 mb-4">
+    <div class="form-group col-md-3">
+      <label for="name">Nome:</label>
+      <input
+        type="text"
+        name="name"
+        id="name"
+        class="form-control"
+        value="{{ request.GET.name }}"
+      />
+    </div>
+
+    <div class="form-group col-md-3">
+      <label for="status">Status:</label>
+      <select name="status" id="status" class="form-control">
+        <option value="">Escolha um status</option>
+        <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Ativo</option>
+        <option value="inactive" {% if request.GET.status == 'inactive' %}selected{% endif %}>Inativo</option>
+      </select>
+    </div>
+
+    <div class="form-group col-md-2 align-self-end">
+      <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+    </div>
+  </form>
+
+  <table class="table table-striped mt-3">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for catalog in catalogs %}
+      <tr>
+        <td>{{ catalog.name }}</td>
+        <td>{{ catalog.get_status_display }}</td>
+        <td>
+          <a href="{% url 'catalog_delete' catalog.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza de que deseja excluir este catálogo?');">Excluir</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3">Nenhum catálogo encontrado.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
