@@ -1,6 +1,12 @@
+import os
 from django.db import models
-from .base_model import BaseModel 
-from core.models.category_models import Category  # Certifique-se de que Category está importado
+from catalog_project.settings import BASE_DIR
+from core.validators.product_validators import validate_name, validate_description, validate_image
+from .base_model import BaseModel
+from core.models.category_models import Category
+from django.core.files.storage import FileSystemStorage
+
+fs = FileSystemStorage(location=os.path.join(BASE_DIR, 'media'))
 
 class Product(BaseModel):
     
@@ -13,12 +19,13 @@ class Product(BaseModel):
         max_length=150, 
         null=False, 
         blank=False,
-        validators=[]
+        validators=[validate_name]
     )
     
     description = models.CharField(
         max_length=300,
         blank=True,
+        validators=[validate_description]
     )
     
     price = models.DecimalField(
@@ -28,9 +35,11 @@ class Product(BaseModel):
         blank=False
     )
     
-    image = models.CharField(
-        blank=True,
-        max_length=400
+    image = models.ImageField(
+        upload_to='images/',
+        storage=fs,
+        validators=[validate_image],
+        blank=False 
     )
     
     status = models.CharField(
@@ -48,5 +57,5 @@ class Product(BaseModel):
     )
     
     class Meta:
-        verbose_name ='Product'
+        verbose_name = 'Product'
         verbose_name_plural = 'Products'
