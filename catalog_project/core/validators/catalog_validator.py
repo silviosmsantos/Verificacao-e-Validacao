@@ -12,12 +12,13 @@ def validate_catalog_data(data, is_update=False):
             raise ValueError(message)
     
     if not is_update:
-        validate_presence('name', "Catalog must have a name")
-        validate_presence('status', "Catalog must have a status")
-        validate_presence('company', "Catalog must have an associated company")
-        validate_presence('user', "Catalog must have an associated user")
+        validate_presence('name', "O catálogo deve ter um nome")
+        validate_presence('status', "O catálogo deve ter um status")
+        validate_presence('company', "O catálogo deve estar associado a uma empresa")
+        validate_presence('user', "O catálogo deve ter um usuário associado")
     else:
-        validate_non_empty('name', "Catalog name cannot be empty")
-        validate_non_empty('status', "Catalog status cannot be empty")
-        validate_non_none('company', "Catalog must have a valid company")
-        validate_non_none('user', "Catalog must have a valid user")
+        validate_non_empty('name', "O nome do catálogo não pode estar vazio")
+        if 'status' in data:
+            validate_non_empty('status', "O status do catálogo não pode estar vazio")
+        validate_non_none('company', "O catálogo deve ter uma empresa válida")
+        validate_non_none('user', "O catálogo deve ter um usuário válido")
