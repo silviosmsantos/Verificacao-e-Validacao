@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Sistema de Catálogo{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+      }
+      .container-fluid {
+        height: 100vh;
+        display: flex;
+        flex-direction: row;
+        padding: 0;
+        margin: 0;
+      }
+      .sidebar {
+        background-color: #007bff;
+        color: #fff;
+        border-right: 1px solid #ddd;
+        height: 100%;
+        padding: 20px;
+        width: 230px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        overflow-y: auto;
+      }
+      .sidebar .nav-link {
+        color: #fff;
+      }
+      .sidebar .nav-link:hover {
+        background-color: #0056b3;
+        text-decoration: none;
+        border-radius: 8px;
+      }
+      .content {
+        width: 100%;
+        margin-left: 230px;
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.85);
+        height: 100vh;
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <nav class="sidebar">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'home' %}">Inicio</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'catalog_list' %}">Catálago</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'messages' %}">Mensagens</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'profile' %}">Perfil</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'list_permissions' %}"
+              >Permissões</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">Sair</a>
+          </li>
+        </ul>
+      </nav>
+      <div class="content">
+        {% block content %}
+        <!-- Conteúdo específico da página vai aqui -->
+        {% endblock %}
+      </div>
+    </div>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+  </body>
+</html>
