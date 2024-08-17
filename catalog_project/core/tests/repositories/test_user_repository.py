@@ -1,25 +1,15 @@
-from django.test import TestCase
 from core.models.userPermission import UserPermission
 from core.repositories.user_repository import UserRepository
 from core.models.user_models import User
 from core.models.company_models import Company
 from core.models.permission_models import Permission
+from ..base_test_case import BaseTestCase
 
-class UserRepositoryTest(TestCase):
+class UserRepositoryTest(BaseTestCase):
     def setUp(self):
-        self.company = Company.objects.create(name='Test Company', status='active')
+        super().setUp()
         self.permission1 = Permission.objects.create(name='Permission 1', status='active')
         self.permission2 = Permission.objects.create(name='Permission 2', status='active')
-        
-        self.user = User.objects.create_user(
-            email='test@example.com',
-            password='password',
-            name='Test User',
-            phone='1234567890',
-            status='active',
-            company=self.company,
-            profile='manager'
-        )
 
     def test_get_all_users(self):
         users = UserRepository.get_all_users()

@@ -4,22 +4,14 @@ from core.services.user_service import UserService
 from core.models.user_models import User
 from core.models.company_models import Company
 from core.models.permission_models import Permission
+from core.tests.base_test_case import BaseTestCase
 
-class UserServiceTest(TestCase):
+class UserServiceTest(BaseTestCase):
     def setUp(self):
-        self.company = Company.objects.create(name='Test Company', status='active')
+        super().setUp()
         self.permission1 = Permission.objects.create(name='Permission 1', status='active')
         self.permission2 = Permission.objects.create(name='Permission 2', status='active')
-        self.user = User.objects.create_user(
-            email='test@example.com',
-            password='password',
-            name='Test User',
-            phone='1234567890',
-            status='active',
-            company=self.company,
-            profile='manager'
-        )
-
+        
     def test_get_all_users(self):
         users = UserService.get_all_users()
         self.assertIn(self.user, users)
