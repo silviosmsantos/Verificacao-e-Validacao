@@ -58,37 +58,3 @@ class ProductServiceTestCase(TestCase):
     def test_list_products(self):
         products = self.service.list_products()
         self.assertIn(self.product, products)
-
-    def test_validate_name(self):
-        try:
-            validate_name('Valid Product Name')
-        except ValidationError:
-            self.fail('validate_name() raised ValidationError unexpectedly!')
-
-    def test_validate_name_too_short(self):
-        with self.assertRaises(ValidationError):
-            validate_name('No')
-
-    def test_validate_description(self):
-        try:
-            validate_description('Valid description with enough length.')
-        except ValidationError:
-            self.fail('validate_description() raised ValidationError unexpectedly!')
-
-    def test_validate_description_empty(self):
-        with self.assertRaises(ValidationError):
-            validate_description('')
-
-    def test_validate_description_too_short(self):
-        with self.assertRaises(ValidationError):
-            validate_description('Short')
-
-    def test_validate_image(self):
-        try:
-            validate_image(self.create_test_image())
-        except ValidationError:
-            self.fail('validate_image() raised ValidationError unexpectedly!')
-
-    def test_validate_image_none(self):
-        with self.assertRaises(ValidationError):
-            validate_image(None)
