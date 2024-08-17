@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render, redirect
-from catalog.forms.catalog_form import CatalogForm
+from django.views.decorators.http import require_http_methods
 from catalog.forms.login_form import LoginForm
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from catalog.forms.message_form import MessageFilterForm
@@ -28,7 +28,8 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
 
 class CustomPasswordResetCompleteView(PasswordResetCompleteView):
     template_name = 'catalog/reset_password_complete.html'
-    
+
+@require_http_methods(["GET", "POST"]) 
 def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
@@ -43,6 +44,7 @@ def login_view(request):
         form = LoginForm()
     return render(request, 'login.html', {'form': form})
 
+@require_http_methods(["GET", "POST"]) 
 def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -72,11 +74,13 @@ def register_view(request):
     return render(request, 'register.html', {'form': form})
 
 @login_required
+@require_http_methods(["GET"]) 
 def home_view(request):
     return render(request, 'home.html', {'user': request.user})
 
 # view do catalogo
 @login_required
+@require_http_methods(["GET", "POST"]) 
 def catalog_list_view(request):
     name = request.GET.get('name', '')
     status = request.GET.get('status', '')
@@ -91,15 +95,19 @@ def catalog_list_view(request):
     return render(request, 'catalog_list.html', context)
 
 @login_required
+@require_http_methods(["GET", "POST"])
 def catalog_delete_view(request, pk):
     catalog = get_object_or_404(Catalog, pk=pk)
+    
     if request.method == 'POST':
         catalog.delete()
         return redirect('catalog_list')
+    
     return render(request, 'catalog_delete.html', {'catalog': catalog})
 
 # view de messages
 @login_required
+@require_http_methods(["GET"]) 
 def messages_list_view(request):
     form = MessageFilterForm(request.GET or None)
     messages = Message.objects.all()
@@ -121,6 +129,7 @@ def messages_list_view(request):
     return render(request, 'messages_list.html', {'messages': messages, 'form': form})
 
 @login_required
+@require_http_methods(["GET"]) 
 def permissions_list_view(request):
     user_permissions = UserPermission.objects.filter(user=request.user)
     return render(request, 'permission_list.html', {
@@ -128,6 +137,7 @@ def permissions_list_view(request):
     })
 
 @login_required
+@require_http_methods(["GET", "POST"]) 
 def profile_view(request):
     user = request.user
     if request.method == 'POST':

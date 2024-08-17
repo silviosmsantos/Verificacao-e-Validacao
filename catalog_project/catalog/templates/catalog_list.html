@@ -45,7 +45,10 @@
         <td>{{ catalog.name }}</td>
         <td>{{ catalog.get_status_display }}</td>
         <td>
-          <a href="{% url 'catalog_delete' catalog.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza de que deseja excluir este catálogo?');">Excluir</a>
+          <form method="get" action="{% url 'catalog_delete' catalog.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+          </form>
         </td>
       </tr>
       {% empty %}
