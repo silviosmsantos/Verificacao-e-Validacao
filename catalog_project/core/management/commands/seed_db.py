@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from faker import Faker
-import random
+import secrets
 from core.models.company_models import Company
 from core.models.permission_models import Permission
 from core.models.userPermission import UserPermission
@@ -11,6 +11,7 @@ from core.models.category_models import Category
 from core.models.product_models import Product
 
 fake = Faker('pt_BR')
+secure_random = secrets.SystemRandom()
 
 class Command(BaseCommand):
     help = 'Seed the database with companies, users, permissions, catalogs, messages, and products, and assign permissions to users'
@@ -32,7 +33,7 @@ def create_companies():
         company_name = fake.company()
         company, _ = Company.objects.get_or_create(
             name=company_name,
-            defaults={'status': random.choice(['active', 'inactive'])}
+            defaults={'status': secure_random.choice(['active', 'inactive'])}
         )
         companies.append(company)
     return companies
@@ -47,8 +48,8 @@ def create_users(companies):
                 'name': fake.name(),
                 'phone': fake.phone_number(),
                 'status': 'active',
-                'company': random.choice(companies),
-                'profile': random.choice(['manager', 'admin', 'user'])
+                'company': secure_random.choice(companies),
+                'profile': secure_random.choice(['manager', 'admin', 'user'])
             }
         )
         if created:
@@ -80,8 +81,8 @@ def create_categories(companies):
         category, _ = Category.objects.get_or_create(
             name=category_name,
             defaults={
-                'status': random.choice(['active', 'inactive']),
-                'company': random.choice(companies)
+                'status': secure_random.choice(['active', 'inactive']),
+                'company': secure_random.choice(companies)
             }
         )
         categories.append(category)
@@ -94,9 +95,9 @@ def create_catalogs(users, companies):
         catalog, _ = Catalog.objects.get_or_create(
             name=catalog_name,
             defaults={
-                'status': random.choice(['active', 'inactive']),
-                'company': random.choice(companies),
-                'user': random.choice(users)
+                'status': secure_random.choice(['active', 'inactive']),
+                'company': secure_random.choice(companies),
+                'user': secure_random.choice(users)
             }
         )
         catalogs.append(catalog)
@@ -108,11 +109,11 @@ def create_products(catalogs):
         product_data = {
             'name': fake.word(),
             'description': fake.text(max_nb_chars=200),
-            'price': round(random.uniform(10.0, 1000.0), 2),
+            'price': round(secure_random.uniform(10.0, 1000.0), 2),
             'image': fake.image_url(),
-            'status': random.choice(['active', 'inactive']),
-            'category': random.choice(categories),
-            'catalog': random.choice(catalogs)
+            'status': secure_random.choice(['active', 'inactive']),
+            'category': secure_random.choice(categories),
+            'catalog': secure_random.choice(catalogs)
         }
         Product.objects.create(**product_data)
 
@@ -124,5 +125,5 @@ def create_messages(catalogs):
             email=fake.email(),
             phone=fake.phone_number(),
             content=message_content,
-            catalog=random.choice(catalogs)
+            catalog=secure_random.choice(catalogs)
         )
