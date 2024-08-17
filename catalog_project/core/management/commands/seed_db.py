@@ -7,11 +7,13 @@ from core.models.userPermission import UserPermission
 from core.models.user_models import User
 from core.models.catalog_models import Catalog
 from core.models.message_models import Message
+from core.models.category_models import Category
+from core.models.product_models import Product
 
 fake = Faker('pt_BR')
 
 class Command(BaseCommand):
-    help = 'Seed the database with companies, users, permissions, catalogs, messages, and assign permissions to users'
+    help = 'Seed the database with companies, users, permissions, catalogs, messages, and products, and assign permissions to users'
 
     def handle(self, *args, **kwargs):
         companies = create_companies()
@@ -19,6 +21,8 @@ class Command(BaseCommand):
         permissions = create_permissions()
         assign_permissions_to_users(users, permissions)
         catalogs = create_catalogs(users, companies)
+        create_categories(companies)
+        create_products(catalogs)
         create_messages(catalogs)
         self.stdout.write(self.style.SUCCESS('Database seeded successfully.'))
 
@@ -69,6 +73,20 @@ def assign_permissions_to_users(users, permissions):
                 permission=permission
             )
 
+def create_categories(companies):
+    categories = []
+    for _ in range(10):
+        category_name = fake.word()
+        category, _ = Category.objects.get_or_create(
+            name=category_name,
+            defaults={
+                'status': random.choice(['active', 'inactive']),
+                'company': random.choice(companies)
+            }
+        )
+        categories.append(category)
+    return categories
+
 def create_catalogs(users, companies):
     catalogs = []
     for _ in range(10):
@@ -84,6 +102,20 @@ def create_catalogs(users, companies):
         catalogs.append(catalog)
     return catalogs
 
+def create_products(catalogs):
+    categories = Category.objects.all()
+    for _ in range(20):
+        product_data = {
+            'name': fake.word(),
+            'description': fake.text(max_nb_chars=200),
+            'price': round(random.uniform(10.0, 1000.0), 2),
+            'image': fake.image_url(),
+            'status': random.choice(['active', 'inactive']),
+            'category': random.choice(categories),
+            'catalog': random.choice(catalogs)
+        }
+        Product.objects.create(**product_data)
+
 def create_messages(catalogs):
     for _ in range(20):
         message_content = fake.text(max_nb_chars=200)
@@ -94,4 +126,3 @@ def create_messages(catalogs):
             content=message_content,
             catalog=random.choice(catalogs)
         )
-
