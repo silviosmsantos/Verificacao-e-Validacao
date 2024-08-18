@@ -4,29 +4,20 @@ from core.models.user_models import User
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['email', 'name', 'phone', 'status', 'company', 'profile']
+        fields = ['name', 'email', 'phone', 'status', 'company', 'profile']
         
-        labels = {
-            'email': 'E-mail',
-            'name': 'Nome',
-            'phone': 'Telefone',
-            'status': 'Status',
-            'company': 'Empresa',
-            'profile': 'Perfil',
-        }
-
         widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'disabled': 'disabled'}),
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome'}),
-            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Telefone'}),
-            'status': forms.Select(attrs={'class': 'form-control'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'status': forms.Select(attrs={'class': 'form-control', 'disabled': 'disabled'}),
             'company': forms.Select(attrs={'class': 'form-control', 'disabled': 'disabled'}),
-            'profile': forms.Select(attrs={'class': 'form-control'}),
+            'profile': forms.Select(attrs={'class': 'form-control', 'disabled': 'disabled'}),
         }
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        if user:
-            self.fields['email'].initial = user.email
-            self.fields['company'].initial = user.company
+        self.fields['email'].disabled = True
+        self.fields['status'].disabled = True
+        self.fields['company'].disabled = True
+        self.fields['profile'].disabled = True
