@@ -1,0 +1,18 @@
+{% extends 'base_sidebar.html' %} {% load static %} {% block content %}
+<div class="container mt-5">
+  <h1 class="mb-4">Confirmar Exclusão</h1>
+
+  <p>
+    Você tem certeza de que deseja excluir a categoria
+    <strong>{{ category.name }}</strong>? Esta ação não pode ser desfeita.
+  </p>
+
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Excluir</button>
+    <a href="{% url 'categories_by_company' %}" class="btn btn-secondary"
+      >Cancelar</a
+    >
+  </form>
+</div>
+{% endblock %}
