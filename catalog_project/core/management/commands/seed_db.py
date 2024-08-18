@@ -76,16 +76,17 @@ def assign_permissions_to_users(users, permissions):
 
 def create_categories(companies):
     categories = []
-    for _ in range(10):
-        category_name = fake.word()
-        category, _ = Category.objects.get_or_create(
-            name=category_name,
-            defaults={
-                'status': secure_random.choice(['active', 'inactive']),
-                'company': secure_random.choice(companies)
-            }
-        )
-        categories.append(category)
+    for company in companies:
+        for _ in range(5):
+            category_name = fake.word()
+            category, _ = Category.objects.get_or_create(
+                name=category_name,
+                defaults={
+                    'status': secure_random.choice(['active', 'inactive']),
+                    'company': company
+                }
+            )
+            categories.append(category)
     return categories
 
 def create_catalogs(users, companies):

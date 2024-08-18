@@ -10,6 +10,10 @@ class CategoryService:
         return CategoryRepository.get_category_by_id(category_id)
 
     @staticmethod
+    def get_categories_by_company(company_id):
+        return CategoryRepository.get_categories_by_company(company_id)
+
+    @staticmethod
     def create_category(data):
         return CategoryRepository.create_category(data)
 

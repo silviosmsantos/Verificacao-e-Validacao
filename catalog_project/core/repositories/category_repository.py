@@ -14,6 +14,14 @@ class CategoryRepository:
             return None
 
     @staticmethod
+    def get_categories_by_company(company_id):
+        try:
+            company = Company.objects.get(id=company_id)
+            return Category.objects.filter(company=company.pk)
+        except Company.DoesNotExist:
+            return None
+
+    @staticmethod
     def create_category(data):
         if 'company' in data:
             data['company'] = Company.objects.get(id=data['company'])
