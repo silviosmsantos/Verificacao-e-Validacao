@@ -8,6 +8,10 @@ class MessageService:
         return MessageRepository.list_all_messages()
     
     @staticmethod
+    def list_messages_by_company(company_id):
+        return MessageRepository.list_messages_by_company(company_id)
+    
+    @staticmethod
     def create_message(data):
         validate_message_data(data)
         return MessageRepository.create_message(data)

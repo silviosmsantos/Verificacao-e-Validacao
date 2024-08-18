@@ -24,3 +24,7 @@ class MessageRepository:
     @staticmethod
     def list_all_messages():
         return Message.objects.all()
+    
+    @staticmethod
+    def list_messages_by_company(company_id):
+        return Message.objects.filter(catalog__company_id=company_id)
