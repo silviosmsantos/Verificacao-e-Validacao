@@ -5,48 +5,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Página{% endblock %}</title>
-    <!-- Carregar o CSS do Bootstrap -->
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
-    <style>
-      /* Estilos comuns podem ser colocados aqui */
-      body {
-        background-image: url("{% static 'images/backgoud-site.jpg' %}");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .card {
-        max-width: 600px;
-        width: 100%;
-        padding: 20px;
-        background-color: rgba(255, 255, 255, 0.85);
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
-      .extra-links {
-        margin-top: 15px;
-      }
-      .extra-links a {
-        display: block;
-        text-align: center;
-        margin-top: 5px;
-        color: #007bff;
-        text-decoration: none;
-      }
-      .extra-links a:hover {
-        text-decoration: underline;
-      }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
   </head>
   <body>
     {% block content %}
     <!-- Conteúdo específico da página vai aqui -->
     {% endblock %}
-    <!-- Carregar o JS do Bootstrap -->
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
   </body>
 </html>

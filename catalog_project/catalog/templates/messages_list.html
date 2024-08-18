@@ -3,7 +3,7 @@
   <h1 class="mb-4">Página de Mensagens</h1>
 
   <form method="get" class="row g-3 mb-4">
-    <!-- Nome -->
+    {% csrf_token %}
     <div class="form-group col-md-3">
       <label for="nome">Nome:</label>
       <input
@@ -15,7 +15,6 @@
       />
     </div>
 
-    <!-- Email -->
     <div class="form-group col-md-3">
       <label for="email">Email:</label>
       <input
@@ -27,7 +26,6 @@
       />
     </div>
 
-    <!-- Telefone -->
     <div class="form-group col-md-2">
       <label for="phone">Telefone:</label>
       <input
@@ -39,7 +37,6 @@
       />
     </div>
 
-    <!-- Data de Envio -->
     <div class="form-group col-md-2">
       <label for="sent_at">Data de Envio:</label>
       <input
@@ -51,7 +48,6 @@
       />
     </div>
 
-    <!-- Botão de Filtrar -->
     <div class="form-group col-md-2 align-self-end">
       <button type="submit" class="btn btn-primary w-100">Filtrar</button>
     </div>
