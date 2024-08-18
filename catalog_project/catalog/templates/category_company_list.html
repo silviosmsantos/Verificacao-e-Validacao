@@ -1,0 +1,68 @@
+{% extends 'base_sidebar.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1 class="mb-4">Lista de Categorias</h1>
+
+  <form method="get" class="row g-3 mb-4">
+    <!-- Nome da Categoria -->
+    <div class="form-group col-md-6">
+      <label for="name">Nome da Categoria:</label>
+      <input
+        type="text"
+        name="name"
+        id="name"
+        class="form-control"
+        value="{{ request.GET.name }}"
+      />
+    </div>
+
+    <!-- Status -->
+    <div class="form-group col-md-3">
+      <label for="status">Status:</label>
+      <select name="status" id="status" class="form-control">
+        <option value="">Todos</option>
+        <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Ativo</option>
+        <option value="inactive" {% if request.GET.status == 'inactive' %}selected{% endif %}>Inativo</option>
+      </select>
+    </div>
+
+    <!-- Botão de Filtrar -->
+    <div class="form-group col-md-3 align-self-end">
+      <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+    </div>
+  </form>
+
+  <a href="{% url 'category_create' %}" class="btn btn-success mb-4">+ Cadastro</a>
+  
+  <table class="table table-striped mt-3">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for category in categories %}
+      <tr>
+        <td>{{ category.name }}</td>
+        <td>{{ category.get_status_display }}</td>
+        <td>
+          <a href="{% url 'category_edit' category.id %}" class="btn btn-warning btn-sm">Editar</a>
+          <form method="get" action="{% url 'category_delete' category.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3">Nenhuma categoria encontrada.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
