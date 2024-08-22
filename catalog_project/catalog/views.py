@@ -16,6 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from core.models.catalog_models import Catalog
 from core.models.category_models import Category
+from core.models.company_models import Company
 from core.models.userPermission import UserPermission
 from core.services.catalog_service import CatalogService
 from core.services.category_service import CategoryService
@@ -46,7 +47,6 @@ def profile_required(profiles):
             return view_func(request, *args, **kwargs)
         return _wrapped_view
     return decorator
-
 
 @require_http_methods(["GET", "POST"]) 
 def login_view(request):
@@ -91,6 +91,45 @@ def register_view(request):
     else:
         form = RegisterForm()
     return render(request, 'register.html', {'form': form})
+
+@require_http_methods(["GET"]) 
+def catalog_company_visualize_product(request):
+    companies = Company.objects.all()
+    catalogs = None
+    selected_company = None
+
+    company_id = request.GET.get('company_id')
+    if company_id:
+        try:
+            selected_company = get_object_or_404(Company, id=company_id)
+            catalogs = CatalogService.list_catalogs_by_company(selected_company.id)
+        except ValueError:
+            selected_company = None
+            catalogs = None
+
+    return render(request, 'catalog_company_visualize_product.html', {
+        'companies': companies,
+        'catalogs': catalogs,
+        'selected_company': selected_company
+    })
+
+def catalog_detail(request):
+    catalog_id = request.GET.get('catalog_id')
+    if catalog_id:
+        catalog = CatalogService.get_catalog(catalog_id)
+        if catalog is None:
+            messages.error(request, 'Catálogo não encontrado.')
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+    else:
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    products = catalog.products_catalog.all()
+
+    return render(request, 'catalog_detail.html', {
+        'catalog': catalog,
+        'products': products
+    })
+
 
 @login_required
 @require_http_methods(["GET"])

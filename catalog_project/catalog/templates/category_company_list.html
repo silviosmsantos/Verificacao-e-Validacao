@@ -6,7 +6,7 @@
   <h1 class="mb-4">Lista de Categorias</h1>
 
   <form method="get" class="row g-3 mb-4">
-    <!-- Nome da Categoria -->
+    {% csrf_token %}
     <div class="form-group col-md-6">
       <label for="name">Nome da Categoria:</label>
       <input
