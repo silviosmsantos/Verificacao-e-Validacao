@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from catalog.forms.catalog_form import CatalogForm
+from catalog.forms.categoryForm import CategoryForm
 from catalog.forms.login_form import LoginForm
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from catalog.forms.message_form import MessageFilterForm
@@ -14,7 +15,7 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from core.models.catalog_models import Catalog
-from core.models.message_models import Message
+from core.models.category_models import Category
 from core.models.userPermission import UserPermission
 from core.services.catalog_service import CatalogService
 from core.services.category_service import CategoryService
@@ -35,6 +36,17 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
 
 class CustomPasswordResetCompleteView(PasswordResetCompleteView):
     template_name = 'catalog/reset_password_complete.html'
+
+def profile_required(profiles):
+    def decorator(view_func):
+        def _wrapped_view(request, *args, **kwargs):
+            if request.user.profile not in profiles:
+                messages.error(request, 'Você não tem permissão para acessar esta página.')
+                return redirect('home')
+            return view_func(request, *args, **kwargs)
+        return _wrapped_view
+    return decorator
+
 
 @require_http_methods(["GET", "POST"]) 
 def login_view(request):
@@ -81,17 +93,34 @@ def register_view(request):
     return render(request, 'register.html', {'form': form})
 
 @login_required
-@require_http_methods(["GET"]) 
+@require_http_methods(["GET"])
+@profile_required(profiles=['admin', 'manager']) 
 def home_view(request):
-    return render(request, 'home.html', {'user': request.user})
+    user = request.user
+    company = user.company
 
-# view do catalogo
+    catalog_count = CatalogService.list_catalogs_by_company(company.id).count()
+    category_count = CategoryService.get_categories_by_company(company.id).count()
+    message_count = MessageService.list_messages_by_company(company.id).count()
+
+    context = {
+        'user': user.name,
+        'catalog_count': catalog_count,
+        'category_count': category_count,
+        'message_count': message_count,
+    }
+    return render(request, 'home.html', context)
+
 @login_required
 @require_http_methods(["GET", "POST"]) 
+@profile_required(profiles=['admin', 'manager']) 
 def catalog_list_view(request):
+    user = request.user
+    company = user.company
+
     name = request.GET.get('name', '')
     status = request.GET.get('status', '')
-    catalogs = CatalogService.list_all_catalogs()
+    catalogs = CatalogService.list_catalogs_by_company(company.id)
     if name:
         catalogs = catalogs.filter(name__icontains=name)
     if status:
@@ -101,9 +130,9 @@ def catalog_list_view(request):
     }
     return render(request, 'catalog_list.html', context)
 
-
 @login_required
 @require_http_methods(["GET", "POST"])
+@profile_required(profiles=['admin', 'manager']) 
 def catalog_create_view(request):
     if request.method == 'POST':
         form = CatalogForm(request.POST)
@@ -125,6 +154,7 @@ def catalog_create_view(request):
 
 @login_required
 @require_http_methods(["GET", "POST"])
+@profile_required(profiles=['admin', 'manager']) 
 def catalog_delete_view(request, pk):
     try:
         catalog = get_object_or_404(Catalog, id=pk)  # Usa o UUID como id
@@ -139,12 +169,83 @@ def catalog_delete_view(request, pk):
 
     return render(request, 'catalog_delete.html', {'catalog': catalog})
 
-# view de messages
+@login_required
+@require_http_methods(["GET"])
+@profile_required(profiles=['admin', 'manager']) 
+def category_list_by_company_view(request):
+    user_company = request.user.company
+    name_filter = request.GET.get('name', '').strip()
+    status_filter = request.GET.get('status', '').strip()
+    categories = CategoryService.get_categories_by_company(user_company.id)
+    if name_filter:
+        categories = categories.filter(name__icontains=name_filter)
+    if status_filter:
+        categories = categories.filter(status=status_filter)
+    context = {
+        'categories': categories,
+        'name_filter': name_filter,
+        'status_filter': status_filter,
+    }
+    return render(request, 'category_company_list.html', context)
+
+@login_required
+@require_http_methods(["GET", "POST"])
+@profile_required(profiles=['admin', 'manager']) 
+def category_delete_view(request, pk):
+    category = CategoryService.get_category_by_id(pk)
+    if not category:
+        messages.error(request, 'Category não encontrada.')
+        return redirect('categories_by_company')
+    if request.method == "POST":
+        CategoryService.delete_category(pk)
+        messages.success(request, 'category excluída com sucesso.')
+        return redirect('categories_by_company')
+    return render(request, 'category_delete.html', {'category': category})
+
+@login_required
+@require_http_methods(["GET", "POST"])
+@profile_required(profiles=['admin', 'manager']) 
+def category_create_view(request):
+    if request.method == "POST":
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            company = request.user.company
+            data = form.cleaned_data
+            data['company'] = company.id
+            CategoryService.create_category(data)
+            messages.success(request, 'Categoria criada com sucesso.')
+            return redirect('categories_by_company') 
+    else:
+        form = CategoryForm()
+    return render(request, 'category_form.html', {'form': form, 'action': 'Criar'})
+
+@login_required
+@require_http_methods(["GET", "POST"])
+@profile_required(profiles=['admin', 'manager']) 
+def category_edit_view(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    if request.method == "POST":
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            data = form.cleaned_data
+            data['company'] = category.company.id
+            CategoryService.update_category(category.id, data)
+            messages.success(request, 'Categoria atualizada com sucesso.')
+            return redirect('categories_by_company')
+    else:
+        form = CategoryForm(instance=category)
+    
+    return render(request, 'category_form.html', {'form': form, 'action': 'Editar'})
+
 @login_required
 @require_http_methods(["GET"]) 
+@profile_required(profiles=['admin', 'manager']) 
 def messages_list_view(request):
+    user = request.user
+    company = user.company
+
     form = MessageFilterForm(request.GET or None)
-    messages = MessageService.list_all_messages()
+    messages = MessageService.list_messages_by_company(company.id)
     
     if form.is_valid():
         nome = form.cleaned_data.get('nome')
@@ -164,6 +265,7 @@ def messages_list_view(request):
 
 @login_required
 @require_http_methods(["GET", "POST"])
+@profile_required(profiles=['admin', 'manager']) 
 def message_delete_view(request, message_id):
     message = MessageService.get_message(message_id)
     if not message:
@@ -177,6 +279,7 @@ def message_delete_view(request, message_id):
 
 @login_required
 @require_http_methods(["GET"]) 
+@profile_required(profiles=['admin']) 
 def permissions_list_view(request):
     user_permissions = UserPermission.objects.filter(user=request.user)
     return render(request, 'permission_list.html', {
@@ -185,35 +288,33 @@ def permissions_list_view(request):
 
 @login_required
 @require_http_methods(["GET", "POST"]) 
+@profile_required(profiles=['admin']) 
 def profile_view(request):
     user = request.user
     if request.method == 'POST':
-        form = ProfileForm(request.POST, user=user)
+        form = ProfileForm(request.POST, instance=user)
         if form.is_valid():
             data = form.cleaned_data
+            company = user.company 
             data_to_update = {
                 'name': data.get('name'),
                 'phone': data.get('phone'),
-                'status': data.get('status'),
-                'profile': data.get('profile')
+                'email': user.email,
+                'status': user.status,
+                'profile': user.profile,
+                'company': company
             }
             UserService.update_user(user.id, data_to_update)
             messages.success(request, 'Perfil atualizado com sucesso!')
             return redirect('profile')
     else:
-        initial_data = {
-            'name': user.name,
-            'email': user.email,
-            'phone': user.phone,
-            'status': user.status,
-            'company': user.company,
-            'profile': user.profile  
-        }
-        form = ProfileForm(initial=initial_data, user=user)
+        form = ProfileForm(instance=user)
 
     return render(request, 'profile.html', {'form': form})
 
 @csrf_exempt
+@require_http_methods(["POST"]) 
+@profile_required(profiles=['admin', 'manager']) 
 def product_create_view(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)

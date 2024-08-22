@@ -31,3 +31,7 @@ class CatalogRepository:
         if catalog:
             catalog.delete()
         return catalog
+
+    @staticmethod
+    def list_catalogs_by_company(company_id):
+        return Catalog.objects.filter(company_id=company_id)

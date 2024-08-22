@@ -1,0 +1,42 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block title %}Visualizar Catálogos{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2 class="text-center">Selecione uma Empresa</h2>
+
+  <form method="get">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="company_id">Escolha uma empresa:</label>
+      <select name="company_id" id="company_id" class="form-control" onchange="this.form.submit()">
+        <option value="">-- Selecione --</option>
+        {% for company in companies %}
+          <option value="{{ company.id }}" {% if selected_company and selected_company.id == company.id %}selected{% endif %}>{{ company.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </form>
+
+  {% if catalogs %}
+    <h2 class="text-center mt-4">Catálogos da Empresa: {{ selected_company.name }}</h2>
+    <form method="get" action="{% url 'catalog_detail' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="catalog_id">Escolha um catálogo:</label>
+        <select name="catalog_id" id="catalog_id" class="form-control" onchange="this.form.submit()">
+          <option value="">-- Selecione --</option>
+          {% for catalog in catalogs %}
+            <option value="{{ catalog.id }}">{{ catalog.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </form>
+  {% elif selected_company %}
+    <p class="text-center mt-3">Nenhum catálogo encontrado para a empresa selecionada.</p>
+  {% endif %}
+
+</div>
+{% endblock %}

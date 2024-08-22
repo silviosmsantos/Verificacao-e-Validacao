@@ -56,14 +56,22 @@
       <nav class="sidebar">
         <ul class="nav flex-column">
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'home' %}">Inicio</a>
+            <a class="nav-link" href="{% url 'home' %}">Início</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'catalog_list' %}">Catálago</a>
+            <a class="nav-link" href="{% url 'catalog_list' %}">Catálogos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'categories_by_company' %}"
+              >Categorias</a
+            >
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'messages_list' %}">Mensagens</a>
           </li>
+
+          <!-- Exibir opções apenas para perfis diferentes de 'manager' -->
+          {% if request.user.profile != 'manager' %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'profile' %}">Perfil</a>
           </li>
@@ -72,6 +80,8 @@
               >Permissões</a
             >
           </li>
+          {% endif %}
+
           <li class="nav-item">
             <a class="nav-link" href="{% url 'logout' %}">Sair</a>
           </li>

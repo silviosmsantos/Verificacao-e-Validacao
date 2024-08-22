@@ -14,6 +14,10 @@ class CatalogService:
     @staticmethod
     def list_all_catalogs():
         return CatalogRepository.get_all_catalogs()
+    
+    @staticmethod
+    def list_catalogs_by_company(company_id):
+        return CatalogRepository.list_catalogs_by_company(company_id)
 
     @staticmethod
     def update_catalog(catalog_id, data):

@@ -1,4 +1,52 @@
 {% extends 'base_sidebar.html' %} {% load static %} {% block content %}
-<h1 class="welcome-text">Bem-vindo(a), {{ user }}!</h1>
-<p>Aqui está o conteúdo da página inicial.</p>
+<div class="container mt-5">
+  <h1 class="mb-4">Bem-vindo(a), {{ user }}!</h1>
+
+  <style>
+    .card-hover {
+      transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card-hover:hover {
+      background-color: #f0f0f0; /* Cor de fundo ao passar o mouse */
+      transform: scale(1.05); /* Leve aumento ao passar o mouse */
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Sombra ao passar o mouse */
+    }
+  </style>
+
+  <div class="row justify-content-center">
+    <div class="col-md-4 mb-4">
+      <a href="{% url 'catalog_list' %}" class="text-decoration-none">
+        <div class="card text-center shadow-sm card-hover">
+          <div class="card-body d-flex flex-column justify-content-center">
+            <h5 class="card-title text-dark">Catálogos</h5>
+            <p class="card-text display-4 text-dark">{{ catalog_count }}</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <a href="{% url 'categories_by_company' %}" class="text-decoration-none">
+        <div class="card text-center shadow-sm card-hover">
+          <div class="card-body d-flex flex-column justify-content-center">
+            <h5 class="card-title text-dark">Categorias</h5>
+            <p class="card-text display-4 text-dark">{{ category_count }}</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <a href="{% url 'messages_list' %}" class="text-decoration-none">
+        <div class="card text-center shadow-sm card-hover">
+          <div class="card-body d-flex flex-column justify-content-center">
+            <h5 class="card-title text-dark">Mensagens</h5>
+            <p class="card-text display-4 text-dark">{{ message_count }}</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
 {% endblock %}
