@@ -2,19 +2,16 @@
 <div class="container mt-5">
   <h1 class="mb-4">Perfil</h1>
 
-  <!-- Mensagens de Sucesso -->
   {% if messages %}
   <div class="alert alert-success">
     {% for message in messages %} {{ message }} {% endfor %}
   </div>
   {% endif %}
 
-  <!-- Formulário de Perfil -->
   <div class="card p-4 mb-5 shadow-sm">
     <form method="post" class="needs-validation" novalidate>
       {% csrf_token %}
       <div class="row g-3">
-        <!-- Nome e Email -->
         <div class="col-md-6">
           <div class="form-group">
             <label for="{{ form.name.id_for_label }}" class="form-label"
@@ -41,7 +38,6 @@
           </div>
         </div>
 
-        <!-- Telefone e Status -->
         <div class="col-md-6">
           <div class="form-group">
             <label for="{{ form.phone.id_for_label }}" class="form-label"
@@ -68,7 +64,6 @@
           </div>
         </div>
 
-        <!-- Empresa e Perfil -->
         <div class="col-md-6">
           <div class="form-group">
             <label for="{{ form.company.id_for_label }}" class="form-label"
