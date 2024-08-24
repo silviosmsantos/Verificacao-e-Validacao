@@ -1,4 +1,5 @@
 from core.models.product_models import Product
+from django.core.files.storage import default_storage
 class ProductRepository:
     def create_product(self, data):
         product = Product.objects.create(
@@ -8,7 +9,7 @@ class ProductRepository:
             image=data['image'],
             status=data.get('status', 'active'),
             category=data['category'],
-            catalog=data['catalog'] 
+            catalog=data['catalog']
         )
         return product
 

@@ -1,50 +1,35 @@
-{% extends 'base_sidebar.html' %} {% load static %} {% block content %}
+{% extends 'base_sidebar.html' %} {% block content %}
 <div class="container mt-5">
-  <h1 class="mb-4">Criar Novo Catálogo</h1>
+  <h1 class="mb-4">Adicionar Catálogo</h1>
 
-  <!-- Mensagens de Sucesso -->
-  {% if messages %}
-  <div class="alert alert-success">
-    {% for message in messages %} {{ message }} {% endfor %}
-  </div>
-  {% endif %}
-
-  <!-- Formulário do Catálogo -->
-  <div class="card p-4 mb-5 shadow-sm">
-    <form method="post" class="needs-validation" novalidate>
-      {% csrf_token %}
-      <div class="row g-3">
-        <div class="col-md-6">
-          <div class="form-group">
-            <label for="{{ form.name.id_for_label }}" class="form-label"
-              >Nome</label
-            >
-            {{ form.name|safe }} {% if form.name.errors %}
-            <div class="invalid-feedback">
-              {% for error in form.name.errors %} {{ error }} {% endfor %}
-            </div>
-            {% endif %}
-          </div>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row mb-4">
+      <div class="form-group col-md-8">
+        <label for="{{ catalog_form.name.id_for_label }}" class="form-label">
+          {{ catalog_form.name.label }}
+        </label>
+        {{ catalog_form.name|safe }} {% if catalog_form.name.errors %}
+        <div class="invalid-feedback">
+          {% for error in catalog_form.name.errors %} {{ error }} {% endfor %}
         </div>
-
-        <div class="col-md-6">
-          <div class="form-group">
-            <label for="{{ form.status.id_for_label }}" class="form-label"
-              >Status</label
-            >
-            {{ form.status|safe }} {% if form.status.errors %}
-            <div class="invalid-feedback">
-              {% for error in form.status.errors %} {{ error }} {% endfor %}
-            </div>
-            {% endif %}
-          </div>
+        {% endif %}
+      </div>
+      <div class="form-group col-md-4">
+        <label for="{{ catalog_form.status.id_for_label }}" class="form-label">
+          {{ catalog_form.status.label }}
+        </label>
+        {{ catalog_form.status|safe }} {% if catalog_form.status.errors %}
+        <div class="invalid-feedback">
+          {% for error in catalog_form.status.errors %} {{ error }} {% endfor %}
         </div>
+        {% endif %}
       </div>
+    </div>
 
-      <div class="col-12 text-center mt-4">
-        <button type="submit" class="btn btn-success">Salvar Catálogo</button>
-      </div>
-    </form>
-  </div>
+    <div class="text-center mt-4 mb-4">
+      <button type="submit" class="btn btn-success">Salvar Catálogo</button>
+    </div>
+  </form>
 </div>
 {% endblock %}

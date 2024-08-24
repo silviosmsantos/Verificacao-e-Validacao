@@ -1,5 +1,6 @@
 import os
 from django.db import models
+from django.core.files.storage import default_storage
 from catalog_project.settings import BASE_DIR
 from core.models.catalog_models import Catalog
 from core.validators.product_validators import validate_name, validate_description, validate_image
@@ -7,7 +8,7 @@ from .base_model import BaseModel
 from core.models.category_models import Category
 from django.core.files.storage import FileSystemStorage
 
-fs = FileSystemStorage(location=os.path.join(BASE_DIR, 'media'))
+fs = FileSystemStorage(location=os.path.join(BASE_DIR, 'media/images'))
 
 class Product(BaseModel):
     
@@ -68,3 +69,12 @@ class Product(BaseModel):
     class Meta:
         verbose_name = 'Product'
         verbose_name_plural = 'Products'
+
+    def save(self, *args, **kwargs):
+        # Call the parent class save method
+        super().save(*args, **kwargs)
+
+        # If an image was uploaded, print the file path
+        if self.image:
+            file_path = default_storage.save(f'images/{self.image.name}', self.image)
+            print(f'File saved at: {file_path}')

@@ -1,8 +1,15 @@
+
+import base64
+import os
+import uuid
+from django.db import transaction
+from django.core.files.base import ContentFile
+import json
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
-from catalog.forms.catalog_form import CatalogForm
+from catalog.forms.catalog_form import CatalogForm, ProductFormSet
 from catalog.forms.categoryForm import CategoryForm
 from catalog.forms.login_form import LoginForm
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
@@ -10,6 +17,7 @@ from catalog.forms.message_form import MessageFilterForm
 from catalog.forms.product_form import ProductForm
 from catalog.forms.profile_form import ProfileForm
 from catalog.forms.register_form import RegisterForm
+from django.core.files.storage import default_storage
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -17,10 +25,12 @@ from django.urls import reverse_lazy
 from core.models.catalog_models import Catalog
 from core.models.category_models import Category
 from core.models.company_models import Company
+from core.models.product_models import Product
 from core.models.userPermission import UserPermission
 from core.services.catalog_service import CatalogService
 from core.services.category_service import CategoryService
 from core.services.message_service import MessageService
+from core.services.product_services import ProductService
 from core.services.user_service import UserService
 
 class CustomPasswordResetDoneView(PasswordResetDoneView):
@@ -130,26 +140,6 @@ def catalog_detail(request):
         'products': products
     })
 
-
-@login_required
-@require_http_methods(["GET"])
-@profile_required(profiles=['admin', 'manager']) 
-def home_view(request):
-    user = request.user
-    company = user.company
-
-    catalog_count = CatalogService.list_catalogs_by_company(company.id).count()
-    category_count = CategoryService.get_categories_by_company(company.id).count()
-    message_count = MessageService.list_messages_by_company(company.id).count()
-
-    context = {
-        'user': user.name,
-        'catalog_count': catalog_count,
-        'category_count': category_count,
-        'message_count': message_count,
-    }
-    return render(request, 'home.html', context)
-
 @login_required
 @require_http_methods(["GET", "POST"]) 
 @profile_required(profiles=['admin', 'manager']) 
@@ -171,25 +161,112 @@ def catalog_list_view(request):
 
 @login_required
 @require_http_methods(["GET", "POST"])
-@profile_required(profiles=['admin', 'manager']) 
+@profile_required(profiles=['admin', 'manager'])
 def catalog_create_view(request):
-    if request.method == 'POST':
-        form = CatalogForm(request.POST)
-        if form.is_valid():
-            catalog_data = form.cleaned_data
-            catalog_data['user'] = request.user
-            catalog_data['company'] = request.user.company
-            try:
-                CatalogService.create_catalog(catalog_data)
-                messages.success(request, 'Catálogo criado com sucesso!')
-                return redirect('catalog_list')
-            except ValueError as e:
-                messages.error(request, f'Erro ao criar o catálogo: {e}')
-                return HttpResponseBadRequest(f'Erro: {e}')
-    else:
-        form = CatalogForm()
+    user = request.user
+    company = user.company
 
-    return render(request, 'catalog_create.html', {'form': form})
+    if request.method == 'POST':
+        catalog_form = CatalogForm(request.POST)
+        if catalog_form.is_valid():
+            catalog = catalog_form.save(commit=False)
+            catalog.company = company
+            catalog.user = user
+            catalog.save()
+            return redirect('add_products', catalog_id=catalog.id)
+        else:
+            messages.error(request, "Erro ao criar o catálogo.")
+    else:
+        catalog_form = CatalogForm()
+
+    return render(request, 'catalog_create.html', {
+        'catalog_form': catalog_form,
+    })
+
+@login_required
+@require_http_methods(["GET", "POST"])
+@transaction.atomic
+def add_products_view(request, catalog_id):
+    user = request.user
+    company = user.company
+    catalog = Catalog.objects.get(id=catalog_id)
+    categories = CategoryService.get_categories_by_company(company.id)
+
+    if request.method == 'POST':
+        products_str = request.POST.get('product_data')
+        if products_str:
+            try:
+                products = json.loads(products_str)
+                for product_data in products:
+                    product_data['catalog'] = catalog
+                    category_id = product_data.get("category")
+                    category = Category.objects.filter(id=category_id).first()
+                    if category is None:
+                        raise ValueError(f"Categoria com id {category_id} não encontrada.")
+                    
+                    product_data["category"] = category
+                    ProductService().create_product(product_data)
+
+                messages.success(request, "Produtos adicionados com sucesso!")
+                return redirect('catalog_list')
+            except Exception as e:
+                messages.error(request, f"Erro ao adicionar produtos: {str(e)}")
+        else:
+            messages.error(request, "Nenhum produto foi adicionado.")
+    else:
+        formset = ProductFormSet(queryset=Product.objects.none(), form_kwargs={'categories': categories})
+
+    return render(request, 'add_products.html', {
+        'catalog': catalog,
+        'formset': formset,
+        'categories': categories,
+    })
+
+@login_required
+@require_http_methods(["POST"])
+@transaction.atomic
+def save_products(request, catalog_id):
+    try:
+        catalog = CatalogService.get_catalog(catalog_id)
+    except Catalog.DoesNotExist:
+        return JsonResponse({'error': 'Catalog not found'}, status=404)
+    
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        product_data_list = data.get('product_data', [])
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid data format'}, status=400)
+
+    for product_data in product_data_list:
+        try: 
+            category = CategoryService().get_category_by_id(product_data['category'])
+        except Category.DoesNotExist:
+            return JsonResponse({'error': 'Category not found'}, status=404)
+        
+        try:
+            if 'image' in product_data and product_data['image']:
+                base64_image_data = product_data['image']
+                _format, imgstr = base64_image_data.split(';base64,')
+                ext = _format.split('/')[-1]
+                
+                image_file = ContentFile(base64.b64decode(imgstr), name=f"image.{ext}")
+                
+                unique_filename = f'{uuid.uuid4().hex}{os.path.splitext(image_file.name)[1]}'
+                file_path = default_storage.save(f'images/{unique_filename}', image_file)
+                image_name = os.path.basename(file_path)
+                
+                product_data['image'] = image_name
+            
+            product_data['category'] = category
+            product_data['catalog'] = catalog
+
+            ProductService().create_product(product_data)
+
+        except Exception as e:
+            # If any error occurs during product creation, rollback the transaction
+            return JsonResponse({'error': f"Failed to save product {product_data.get('name', '')}: {str(e)}"}, status=500)
+
+    return JsonResponse({'success': True})
 
 @login_required
 @require_http_methods(["GET", "POST"])
@@ -207,6 +284,25 @@ def catalog_delete_view(request, pk):
         return redirect('catalog_list')
 
     return render(request, 'catalog_delete.html', {'catalog': catalog})
+
+@login_required
+@require_http_methods(["GET"])
+@profile_required(profiles=['admin', 'manager']) 
+def home_view(request):
+    user = request.user
+    company = user.company
+
+    catalog_count = CatalogService.list_catalogs_by_company(company.id).count()
+    category_count = CategoryService.get_categories_by_company(company.id).count()
+    message_count = MessageService.list_messages_by_company(company.id).count()
+
+    context = {
+        'user': user.name,
+        'catalog_count': catalog_count,
+        'category_count': category_count,
+        'message_count': message_count,
+    }
+    return render(request, 'home.html', context)
 
 @login_required
 @require_http_methods(["GET"])

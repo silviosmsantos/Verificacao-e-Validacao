@@ -26,7 +26,6 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'messages_list' %}">Mensagens</a>
           </li>
-
           {% if request.user.profile != 'manager' %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'profile' %}">Perfil</a>
@@ -37,7 +36,6 @@
             >
           </li>
           {% endif %}
-
           <li class="nav-item">
             <a class="nav-link" href="{% url 'logout' %}">Sair</a>
           </li>

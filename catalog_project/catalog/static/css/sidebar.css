@@ -42,3 +42,12 @@ body {
   height: 100vh;
   overflow-y: auto;
 }
+
+.is-invalid {
+  border-color: red;
+}
+
+.invalid-feedback {
+  display: block;
+  color: red;
+}

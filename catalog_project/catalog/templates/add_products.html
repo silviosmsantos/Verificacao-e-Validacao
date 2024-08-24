@@ -1,0 +1,357 @@
+{% extends 'base_sidebar.html' %} {% block content %}
+<div class="container mt-5">
+  <h1 class="mb-4">Adicionar Produtos ao Catálogo "{{ catalog.name }}"</h1>
+
+  <!-- Card para adicionar novos produtos -->
+  <div class="row mb-4">
+    <div class="col-md-4 mb-3">
+      <div class="card text-center border-primary">
+        <div class="card-body">
+          <h5 class="card-title">Adicionar Novo Produto</h5>
+          <button
+            type="button"
+            class="btn btn-primary btn-lg"
+            data-bs-toggle="modal"
+            data-bs-target="#productModal"
+          >
+            <i class="bi bi-plus-lg"></i> Adicionar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <form method="post" enctype="multipart/form-data" id="productForm">
+    {% csrf_token %}
+    <div class="row">
+      <!-- Campos dinâmicos para produtos -->
+      <div id="productFields" class="row mb-4">
+        <!-- Campos de produto serão adicionados dinamicamente aqui -->
+      </div>
+
+      <input type="hidden" id="productData" name="product_data" value="" />
+      <div class="text-center mt-4 mb-4">
+        <button
+          type="submit"
+          class="btn btn-success"
+          id="saveProductsButton"
+          style="display: none"
+        >
+          Salvar Produtos
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Modal para Adicionar Produto -->
+  <div
+    class="modal fade"
+    id="productModal"
+    tabindex="-1"
+    aria-labelledby="productModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="productModalLabel">
+            Adicionar Novo Produto
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form id="productFormModal">
+            {% csrf_token %}
+            <div class="row mb-3">
+              <div class="col-md-6 mb-3">
+                <label for="productName" class="form-label"
+                  >Nome do Produto</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="productName"
+                  required
+                />
+                <div class="invalid-feedback" id="productNameError"></div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="productPrice" class="form-label">Preço</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="productPrice"
+                  step="0.01"
+                  required
+                />
+                <div class="invalid-feedback" id="productPriceError"></div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="productCategory" class="form-label"
+                  >Categoria</label
+                >
+                <select class="form-select" id="productCategory" required>
+                  <option value="">Selecione uma Categoria</option>
+                  {% for category in categories %}
+                  <option value="{{ category.id }}">{{ category.name }}</option>
+                  {% endfor %}
+                </select>
+                <div class="invalid-feedback" id="productCategoryError"></div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="productStatus" class="form-label">Status</label>
+                <select class="form-select" id="productStatus" required>
+                  <option value="active">Ativo</option>
+                  <option value="inactive">Inativo</option>
+                </select>
+                <div class="invalid-feedback" id="productStatusError"></div>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-12 mb-3">
+                <label for="productDescription" class="form-label"
+                  >Descrição</label
+                >
+                <textarea
+                  class="form-control"
+                  id="productDescription"
+                ></textarea>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-12 mb-3">
+                <label for="productImage" class="form-label">Imagem</label>
+                <input
+                  type="file"
+                  class="form-control"
+                  id="productImage"
+                  accept="image/*"
+                />
+                <div class="invalid-feedback" id="productImageError"></div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Fechar
+          </button>
+          <button type="button" class="btn btn-primary" id="addProductButton">
+            <i class="bi bi-plus"></i> Adicionar Produto
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const productFormModal = document.getElementById("productFormModal");
+    const productFields = document.getElementById("productFields");
+    const productDataInput = document.getElementById("productData");
+    const saveProductsButton = document.getElementById("saveProductsButton");
+
+    function updateProductData() {
+      const productCards = Array.from(
+        productFields.getElementsByClassName("card"),
+      );
+      const productData = productCards.map((card) => {
+        const name = card.querySelector(".card-title").textContent;
+        const price = parseFloat(
+          card.querySelector(".card-text").textContent.split("Preço: R$ ")[1],
+        );
+        const status = card
+          .querySelector(".card-text")
+          .textContent.split("Status: ")[1]
+          .split("\n")[0];
+        const categoryId = card
+          .querySelector(".card-text")
+          .textContent.split("Categoria ID: ")[1]
+          .split("\n")[0];
+        const imageSrc = card.querySelector(".card-img-top").src;
+
+        return { name, price, status, category: categoryId, image: imageSrc };
+      });
+      productDataInput.value = JSON.stringify(productData);
+
+      // Show or hide the save button based on the number of products
+      if (productCards.length > 0) {
+        saveProductsButton.style.display = "block";
+      } else {
+        saveProductsButton.style.display = "none";
+      }
+    }
+
+    window.removeProduct = function (button) {
+      const productField = button.closest(".col-md-4");
+      productField.remove();
+      updateProductData();
+    };
+
+    document
+      .getElementById("addProductButton")
+      .addEventListener("click", function () {
+        const productName = document.getElementById("productName").value.trim();
+        const productPrice = document
+          .getElementById("productPrice")
+          .value.trim();
+        const productCategoryId = document
+          .getElementById("productCategory")
+          .value.trim();
+        const productStatus = document
+          .getElementById("productStatus")
+          .value.trim();
+        const productDescription = document
+          .getElementById("productDescription")
+          .value.trim();
+        const productImage = document.getElementById("productImage").files[0];
+
+        let isValid = true;
+
+        // Clear previous errors
+        document
+          .querySelectorAll(".invalid-feedback")
+          .forEach((e) => (e.textContent = ""));
+        document
+          .querySelectorAll(".form-control")
+          .forEach((element) => element.classList.remove("is-invalid"));
+
+        // Validate fields
+        if (!productName) {
+          document.getElementById("productNameError").textContent =
+            "O nome do produto é obrigatório.";
+          document.getElementById("productName").classList.add("is-invalid");
+          isValid = false;
+        }
+        if (!productPrice) {
+          document.getElementById("productPriceError").textContent =
+            "O preço do produto é obrigatório.";
+          document.getElementById("productPrice").classList.add("is-invalid");
+          isValid = false;
+        }
+        if (!productCategoryId) {
+          document.getElementById("productCategoryError").textContent =
+            "A categoria do produto é obrigatória.";
+          document
+            .getElementById("productCategory")
+            .classList.add("is-invalid");
+          isValid = false;
+        }
+        if (!productImage) {
+          document.getElementById("productImageError").textContent =
+            "A imagem do produto é obrigatória.";
+          document.getElementById("productImage").classList.add("is-invalid");
+          isValid = false;
+        } else {
+          // Validate image file type and size
+          const validTypes = ["image/jpeg", "image/png", "image/gif"];
+          if (!validTypes.includes(productImage.type)) {
+            document.getElementById("productImageError").textContent =
+              "Formato de imagem não suportado. Aceitos: JPEG, PNG, GIF.";
+            document.getElementById("productImage").classList.add("is-invalid");
+            isValid = false;
+          }
+          if (productImage.size > 2 * 1024 * 1024) {
+            // 2MB limit
+            document.getElementById("productImageError").textContent =
+              "O tamanho da imagem não pode exceder 2MB.";
+            document.getElementById("productImage").classList.add("is-invalid");
+            isValid = false;
+          }
+        }
+
+        if (isValid) {
+          const reader = new FileReader();
+          reader.onload = function (event) {
+            const imageBase64 = event.target.result;
+            const newProductCard = document.createElement("div");
+            newProductCard.classList.add("col-md-4", "mb-3");
+            newProductCard.innerHTML = `
+              <div class="card border-primary">
+                <img
+                  src="${imageBase64}"
+                  class="card-img-top"
+                  alt="${productName}"
+                />
+                <div class="card-body">
+                  <h5 class="card-title">${productName}</h5>
+                  <p class="card-text">
+                    Preço: R$ ${productPrice}<br />
+                    Categoria ID: ${productCategoryId}<br />
+                    Status: ${productStatus}<br />
+                    Descrição: ${productDescription}
+                  </p>
+                  <button
+                    type="button"
+                    class="btn btn-danger"
+                    onclick="removeProduct(this)"
+                  >
+                    <i class="bi bi-trash"></i> Remover
+                  </button>
+                </div>
+              </div>
+            `;
+            productFields.appendChild(newProductCard);
+            updateProductData();
+
+            // Clear the form and close the modal
+            productFormModal.reset();
+            document
+              .querySelectorAll(".form-control")
+              .forEach((element) => element.classList.remove("is-invalid"));
+            document
+              .querySelectorAll(".invalid-feedback")
+              .forEach((e) => (e.textContent = ""));
+            const modal = bootstrap.Modal.getInstance(
+              document.getElementById("productModal"),
+            );
+            modal.hide();
+          };
+          reader.readAsDataURL(productImage);
+        }
+      });
+  });
+
+  document
+    .getElementById("productForm")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const productDataInput = document.getElementById("productData");
+      const catalogId = "{{ catalog.id }}";
+      console.log(catalogId);
+      fetch(`/catalog/${catalogId}/save-products/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify({
+          product_data: JSON.parse(productDataInput.value),
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            window.location.reload();
+          } else {
+            alert("Erro ao salvar produtos!");
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("Erro ao salvar produtos!");
+        });
+    });
+</script>
+{% endblock %}

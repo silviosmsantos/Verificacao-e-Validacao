@@ -56,7 +56,7 @@
         <td>{{ catalog.name }}</td>
         <td>{{ catalog.get_status_display }}</td>
         <td>
-          <a href="{% url 'catalog_delete' catalog.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza de que deseja excluir este catálogo?');">Excluir</a>
+          <a href="{% url 'catalog_delete' catalog.id %}" class="btn btn-danger btn-sm" >Excluir</a>
         </td>
       </tr>
       {% empty %}

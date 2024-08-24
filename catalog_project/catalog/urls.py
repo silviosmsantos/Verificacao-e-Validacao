@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import  catalog_company_visualize_product, catalog_create_view, catalog_delete_view, catalog_detail, catalog_list_view, category_create_view, category_delete_view, category_edit_view, category_list_by_company_view, message_delete_view, permissions_list_view, login_view, messages_list_view, product_create_view, profile_view, register_view, home_view
+from .views import  add_products_view, catalog_company_visualize_product, catalog_create_view, catalog_delete_view, catalog_detail, catalog_list_view, category_create_view, category_delete_view, category_edit_view, category_list_by_company_view, message_delete_view, permissions_list_view, login_view, messages_list_view, product_create_view, profile_view, register_view, home_view, save_products
 from django.contrib.auth import views as auth_views
 
 
@@ -10,8 +10,11 @@ urlpatterns = [
     path('catalog_list/', catalog_list_view, name='catalog_list'),
     path('catalog_create/', catalog_create_view, name='catalog_create'),
     path('catalogs/delete/<uuid:pk>/', catalog_delete_view, name='catalog_delete'),
+    path('add_products/<uuid:catalog_id>/', add_products_view, name='add_products'),
     path('catalog_visualize/', catalog_company_visualize_product, name='catalog_company_visualize_product'),
     path('catalog_detail/', catalog_detail, name='catalog_detail'),
+    path('catalog/<uuid:catalog_id>/save-products/', save_products, name='save_products'),
+    
     path('categories/company/', category_list_by_company_view, name='categories_by_company'),
     path('category/create/', category_create_view, name='category_create'),
     path('category/edit/<uuid:pk>/', category_edit_view, name='category_edit'),

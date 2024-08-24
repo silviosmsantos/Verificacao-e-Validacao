@@ -21,10 +21,12 @@ class Command(BaseCommand):
         users = create_users(companies)
         permissions = create_permissions()
         assign_permissions_to_users(users, permissions)
-        catalogs = create_catalogs(users, companies)
+        for company in companies:
+            catalogs = create_catalogs_for_company(company, users)
+            create_messages_for_catalogs(catalogs)
         create_categories(companies)
-        create_products(catalogs)
-        create_messages(catalogs)
+        create_products()
+
         self.stdout.write(self.style.SUCCESS('Database seeded successfully.'))
 
 def create_companies():
@@ -40,7 +42,7 @@ def create_companies():
 
 def create_users(companies):
     users = []
-    for _ in range(10):
+    for _ in range(7):
         email = fake.email()
         user, created = User.objects.get_or_create(
             email=email,
@@ -49,7 +51,7 @@ def create_users(companies):
                 'phone': fake.phone_number(),
                 'status': 'active',
                 'company': secure_random.choice(companies),
-                'profile': secure_random.choice(['manager', 'admin', 'user'])
+                'profile': secure_random.choice(['manager', 'admin'])
             }
         )
         if created:
@@ -89,24 +91,25 @@ def create_categories(companies):
             categories.append(category)
     return categories
 
-def create_catalogs(users, companies):
+def create_catalogs_for_company(company, users):
     catalogs = []
-    for _ in range(10):
+    for _ in range(20):
         catalog_name = fake.word()
         catalog, _ = Catalog.objects.get_or_create(
             name=catalog_name,
             defaults={
                 'status': secure_random.choice(['active', 'inactive']),
-                'company': secure_random.choice(companies),
+                'company': company,
                 'user': secure_random.choice(users)
             }
         )
         catalogs.append(catalog)
     return catalogs
 
-def create_products(catalogs):
+def create_products():
+    catalogs = Catalog.objects.all()
     categories = Category.objects.all()
-    for _ in range(20):
+    for _ in range(10):
         product_data = {
             'name': fake.word(),
             'description': fake.text(max_nb_chars=200),
@@ -118,13 +121,14 @@ def create_products(catalogs):
         }
         Product.objects.create(**product_data)
 
-def create_messages(catalogs):
-    for _ in range(20):
-        message_content = fake.text(max_nb_chars=200)
-        Message.objects.create(
-            name=fake.name(),
-            email=fake.email(),
-            phone=fake.phone_number(),
-            content=message_content,
-            catalog=secure_random.choice(catalogs)
-        )
+def create_messages_for_catalogs(catalogs):
+    for catalog in catalogs:
+        for _ in range(10):
+            message_content = fake.text(max_nb_chars=200)
+            Message.objects.create(
+                name=fake.name(),
+                email=fake.email(),
+                phone=fake.phone_number(),
+                content=message_content,
+                catalog=catalog
+            )
