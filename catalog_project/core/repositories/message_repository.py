@@ -1,4 +1,5 @@
 from core.models.message_models import Message
+from django.core.exceptions import ObjectDoesNotExist
 
 class MessageRepository:
     @staticmethod
@@ -7,20 +8,29 @@ class MessageRepository:
 
     @staticmethod
     def get_message_by_id(message_id):
-        return Message.objects.get(id=message_id)
+        try:
+            return Message.objects.get(id=message_id)
+        except ObjectDoesNotExist:
+            return None
 
     @staticmethod
     def update_message(message_id, data):
-        message = Message.objects.get(id=message_id)
-        for attr, value in data.items():
-            setattr(message, attr, value)
-        message.save()
-        return message
+        try:
+            message = Message.objects.get(id=message_id)
+            for attr, value in data.items():
+                setattr(message, attr, value)
+            message.save()
+            return message
+        except ObjectDoesNotExist:
+            return None
 
     @staticmethod
     def delete_message(message_id):
-        Message.objects.get(id=message_id).delete()
-    
+        try:
+            Message.objects.get(id=message_id).delete()
+        except ObjectDoesNotExist:
+            pass
+
     @staticmethod
     def list_all_messages():
         return Message.objects.all()

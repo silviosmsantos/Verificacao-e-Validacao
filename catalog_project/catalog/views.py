@@ -304,7 +304,7 @@ def messages_list_view(request):
 
 @login_required
 @require_http_methods(["GET", "POST"])
-@profile_required(profiles=['admin', 'manager']) 
+@profile_required(profiles=['admin', 'manager'])
 def message_delete_view(request, message_id):
     message = MessageService.get_message(message_id)
     if not message:
