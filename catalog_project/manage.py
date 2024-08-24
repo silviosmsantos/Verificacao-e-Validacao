@@ -1,12 +1,14 @@
-#!/usr/bin/env python
 import os
 import sys
+from decouple import config
 
 def ensure_media_directory():
-    media_root = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'media')
-    if not os.path.exists(media_root):
-        os.makedirs(media_root)
-        print(f'Pasta {media_root} criada com sucesso.')
+    ENVIRONMENT = config('ENVIRONMENT', default='development')
+    if ENVIRONMENT != 'production':
+        media_root = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'media')
+        if not os.path.exists(media_root):
+            os.makedirs(media_root)
+            print(f'Pasta {media_root} criada com sucesso.')
 
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'catalog_project.settings')
