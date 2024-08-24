@@ -45,5 +45,5 @@
 ### 7. Run tests application
 
 ```bash
-  python manage.py test
+  pytest
 ```
