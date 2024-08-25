@@ -18,16 +18,18 @@ Catálogo{% endblock %} {% block content %}
     <div class="col-md-4 d-flex align-items-stretch">
       <div class="card mb-4 w-100 d-flex flex-column">
         <img
-          src="https://fps.cdnpk.net/images/home/subhome-ai.webp?w=649&h=649"
+          src="{{ product.image.url }}"
           class="card-img-top"
           alt="{{ product.name }}"
         />
         <div class="card-body d-flex flex-column">
           <h5 class="card-title">{{ product.name }}</h5>
           <p class="card-text">
-            <strong>Preço:</strong> R$ {{ product.price }}
+            <strong>Preço:</strong> R$ {{ product.price|floatformat:2 }}
           </p>
-          <p class="card-text">{{ product.description }}</p>
+          <p class="card-text">
+            <strong>Descriçao:</strong> {{ product.description }}
+          </p>
           <div class="mt-auto"></div>
         </div>
       </div>
@@ -35,7 +37,7 @@ Catálogo{% endblock %} {% block content %}
     {% endfor %}
   </div>
   {% else %}
-  <p>Nenhum produto encontrado para este catálogo.</p>
+  <p>Nenhum produto encontrado.</p>
   {% endif %} {% else %}
   <p class="text-center">Nenhum catálogo encontrado.</p>
   {% endif %}

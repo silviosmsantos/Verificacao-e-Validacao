@@ -1,11 +1,7 @@
 
-import base64
-import os
-import uuid
 from django.db import transaction
-from django.core.files.base import ContentFile
 import json
-from django.http import HttpResponseBadRequest, JsonResponse
+from django.http import  JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
@@ -22,6 +18,7 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
+from core.helpers.ultis import image_to_base64, save_image_from_base64
 from core.models.catalog_models import Catalog
 from core.models.category_models import Category
 from core.models.company_models import Company
@@ -87,7 +84,7 @@ def register_view(request):
                     'email': form.cleaned_data['email'],
                     'phone': form.cleaned_data['phone'],
                     'password': form.cleaned_data['password'],
-                    'status': form.cleaned_data['status'],
+                    'status': 'active',
                     'company': company.pk, 
                     'profile': profile
                 }
@@ -160,27 +157,56 @@ def catalog_list_view(request):
     return render(request, 'catalog_list.html', context)
 
 @login_required
+@require_http_methods(["GET", "POST"]) 
+@profile_required(profiles=['admin', 'manager']) 
+def get_products_by_catalog_view(request, catalog_id):
+    products = Product.objects.filter(catalog_id=catalog_id)
+    product_list = [
+        {
+            'id': product.id,
+            'name': product.name,
+            'price': product.price,
+            'categoryId': product.category.id if product.category else None,
+            'status': product.status,
+            'description': product.description,
+            'imageBase64': image_to_base64(product.image) 
+        }
+        for product in products
+    ]
+    return JsonResponse({'products': product_list})
+
+@login_required
 @require_http_methods(["GET", "POST"])
 @profile_required(profiles=['admin', 'manager'])
-def catalog_create_view(request):
+def catalog_create_view(request, catalog_id=None):
     user = request.user
     company = user.company
 
+    if catalog_id:
+        catalog = get_object_or_404(Catalog, id=catalog_id, company=company)
+        messages.info(request, "Editando o catálogo existente.")
+    else:
+        catalog = None
+
     if request.method == 'POST':
-        catalog_form = CatalogForm(request.POST)
+        catalog_form = CatalogForm(request.POST, instance=catalog)
         if catalog_form.is_valid():
             catalog = catalog_form.save(commit=False)
             catalog.company = company
             catalog.user = user
             catalog.save()
-            return redirect('add_products', catalog_id=catalog.id)
+            if catalog_id:
+                messages.success(request, "Catálogo atualizado com sucesso.")
+            else:
+                messages.success(request, "Catálogo criado com sucesso.")
         else:
-            messages.error(request, "Erro ao criar o catálogo.")
+            messages.error(request, "Erro ao salvar o catálogo.")
     else:
-        catalog_form = CatalogForm()
+        catalog_form = CatalogForm(instance=catalog)
 
     return render(request, 'catalog_create.html', {
         'catalog_form': catalog_form,
+        'catalog': catalog
     })
 
 @login_required
@@ -225,55 +251,66 @@ def add_products_view(request, catalog_id):
 @login_required
 @require_http_methods(["POST"])
 @transaction.atomic
-def save_products(request, catalog_id):
+def save_products_view(request, catalog_id):
     try:
-        catalog = CatalogService.get_catalog(catalog_id)
+        catalog = get_catalog_or_404(catalog_id)
+        product_data_list = load_product_data_from_request(request)
+        remove_existing_products_and_images(catalog)
+        add_new_products(product_data_list, catalog)
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'error': f"Erro ao processar a solicitação: {str(e)}"}, status=500)
+
+def get_catalog_or_404(catalog_id):
+    try:
+        return CatalogService.get_catalog(catalog_id)
     except Catalog.DoesNotExist:
-        return JsonResponse({'error': 'Catalog not found'}, status=404)
-    
+        raise JsonResponse({'error': 'Catálogo não encontrado'}, status=404)
+
+def load_product_data_from_request(request):
     try:
         data = json.loads(request.body.decode('utf-8'))
-        product_data_list = data.get('product_data', [])
+        return data.get('product_data', [])
     except json.JSONDecodeError:
-        return JsonResponse({'error': 'Invalid data format'}, status=400)
+        raise JsonResponse({'error': 'Formato dos dados incorretos'}, status=400)
 
+def remove_existing_products_and_images(catalog):
+    existing_products = Product.objects.filter(catalog=catalog)
+    for product in existing_products:
+        if product.image:
+            delete_image_if_exists(product.image.name)
+        product.delete()
+
+def delete_image_if_exists(image_path):
+    if default_storage.exists(image_path):
+        default_storage.delete(image_path)
+
+def add_new_products(product_data_list, catalog):
     for product_data in product_data_list:
-        try: 
-            category = CategoryService().get_category_by_id(product_data['category'])
-        except Category.DoesNotExist:
-            return JsonResponse({'error': 'Category not found'}, status=404)
-        
-        try:
-            if 'image' in product_data and product_data['image']:
-                base64_image_data = product_data['image']
-                _format, imgstr = base64_image_data.split(';base64,')
-                ext = _format.split('/')[-1]
-                
-                image_file = ContentFile(base64.b64decode(imgstr), name=f"image.{ext}")
-                
-                unique_filename = f'{uuid.uuid4().hex}{os.path.splitext(image_file.name)[1]}'
-                file_path = default_storage.save(f'images/{unique_filename}', image_file)
-                image_name = os.path.basename(file_path)
-                
-                product_data['image'] = image_name
-            
-            product_data['category'] = category
-            product_data['catalog'] = catalog
+        category = get_category_or_404(product_data['category'])
+        process_product_data(product_data, category, catalog)
 
-            ProductService().create_product(product_data)
+def get_category_or_404(category_id):
+    try:
+        return CategoryService().get_category_by_id(category_id)
+    except Category.DoesNotExist:
+        raise JsonResponse({'error': 'Categoria não encontrada'}, status=404)
 
-        except Exception as e:
-            # If any error occurs during product creation, rollback the transaction
-            return JsonResponse({'error': f"Failed to save product {product_data.get('name', '')}: {str(e)}"}, status=500)
+def process_product_data(product_data, category, catalog):
+    if 'image' in product_data and product_data['image']:
+        product_data['image'] = save_image_from_base64(product_data['image'])
+    
+    product_data['category'] = category
+    product_data['catalog'] = catalog
 
-    return JsonResponse({'success': True})
+    ProductService().create_product(product_data)
 
 @login_required
 @require_http_methods(["GET", "POST"])
 @profile_required(profiles=['admin', 'manager']) 
 def catalog_delete_view(request, pk):
     try:
-        catalog = get_object_or_404(Catalog, id=pk)  # Usa o UUID como id
+        catalog = get_object_or_404(Catalog, id=pk)
     except ValueError:
         messages.error(request, 'Catálogo não encontrado. O valor fornecido não é um UUID válido.')
         return redirect('catalog_list')
@@ -446,22 +483,3 @@ def profile_view(request):
         form = ProfileForm(instance=user)
 
     return render(request, 'profile.html', {'form': form})
-
-@csrf_exempt
-@require_http_methods(["POST"]) 
-@profile_required(profiles=['admin', 'manager']) 
-def product_create_view(request):
-    if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES)
-        if form.is_valid():
-            product = form.save()
-            return JsonResponse({
-                'success': True,
-                'product': {
-                    'name': product.name,
-                    'price': product.price,
-                }
-            })
-        else:
-            return JsonResponse({'success': False, 'errors': form.errors})
-    return JsonResponse({'success': False, 'errors': 'Invalid request'})

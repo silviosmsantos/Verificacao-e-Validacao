@@ -23,20 +23,18 @@ class RegisterForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['name', 'email', 'phone', 'password', 'password_confirm', 'status', 'company', 'profile']
+        fields = ['name', 'email', 'phone', 'password', 'password_confirm', 'company', 'profile']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
             'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Telefone'}),
-            'password': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Senha'}),
-            'status': forms.Select(attrs={'class': 'form-select'}),
-        }
+            'password': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Senha'})
+            }
         labels = {
             'name': 'Nome *',
             'email': 'E-mail *',
             'phone': 'Telefone *',
             'password': 'Senha *',
-            'status': 'Status *',
             'company': 'Empresa *',
             'profile': 'Perfil *',
         }

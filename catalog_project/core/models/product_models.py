@@ -71,10 +71,7 @@ class Product(BaseModel):
         verbose_name_plural = 'Products'
 
     def save(self, *args, **kwargs):
-        # Call the parent class save method
         super().save(*args, **kwargs)
-
-        # If an image was uploaded, print the file path
         if self.image:
-            file_path = default_storage.save(f'images/{self.image.name}', self.image)
+            file_path = fs.save(self.image.name, self.image)
             print(f'File saved at: {file_path}')

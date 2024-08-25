@@ -1,6 +1,9 @@
 {% extends 'base_sidebar.html' %} {% block content %}
 <div class="container mt-5">
-  <h1 class="mb-4">Adicionar Catálogo</h1>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Adicionar Catálogo</h1>
+    <a href="{% url 'catalog_list' %}" class="btn btn-secondary"> Voltar </a>
+  </div>
 
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
@@ -28,8 +31,37 @@
     </div>
 
     <div class="text-center mt-4 mb-4">
-      <button type="submit" class="btn btn-success">Salvar Catálogo</button>
+      <button
+        type="submit"
+        class="btn {% if catalog %}btn-warning{% else %}btn-success{% endif %}"
+      >
+        {% if catalog %} Editar {% else %}+ Cadastro{% endif %}
+      </button>
     </div>
   </form>
+  <div class="container mt-4">
+    <div class="row justify-content-center">
+      <div class="col-12">
+        <div class="card shadow-lg border-0">
+          <div class="card-body text-center">
+            {% if catalog %}
+            <h5 class="card-title">Gerencie Seu Catálogo de Produtos</h5>
+            <p class="card-text text-muted">
+              Visualize todos os produtos vinculados ao seu catálogo atual. Aqui
+              você pode adicionar novos itens ou remover os que não deseja mais
+              exibir.
+            </p>
+            <a
+              href="{% url 'add_products' catalog_id=catalog.id %}"
+              class="btn btn-success btn-lg mt-3"
+            >
+              Ver Produtos do Catálogo
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

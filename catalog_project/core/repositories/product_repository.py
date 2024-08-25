@@ -4,10 +4,10 @@ class ProductRepository:
     def create_product(self, data):
         product = Product.objects.create(
             name=data['name'],
-            description=data.get('description', ''),
+            description=data['description'],
             price=data['price'],
             image=data['image'],
-            status=data.get('status', 'active'),
+            status=data['status'],
             category=data['category'],
             catalog=data['catalog']
         )
