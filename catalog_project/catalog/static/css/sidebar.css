@@ -42,3 +42,28 @@ body {
   height: 100vh;
   overflow-y: auto;
 }
+
+.is-invalid {
+  border-color: red;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card-img-top {
+  object-fit: cover;
+  height: 200px; 
+}
+
+.card-body {
+  flex: 1; 
+}
+
+
+.invalid-feedback {
+  display: block;
+  color: red;
+}

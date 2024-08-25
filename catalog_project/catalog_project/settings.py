@@ -37,6 +37,8 @@ MIDDLEWARE = [
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
+APPEND_SLASH = False
+
 # Autenticação
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
@@ -47,8 +49,8 @@ ROOT_URLCONF = 'catalog_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'catalog/templates')],
-        'APP_DIRS': True, 
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -125,21 +127,22 @@ LOGGING = {
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'level': 'INFO', 
+            'level': 'WARNING', 
         },
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'INFO',  
+            'level': 'WARNING',
             'propagate': True,
         },
         'core': {
             'handlers': ['console'],
-            'level': 'INFO', 
+            'level': 'WARNING',
         },
     },
 }
+
 
 AUTH_USER_MODEL = 'core.User'
 
@@ -160,6 +163,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "catalog/static"]
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/images/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/images')
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

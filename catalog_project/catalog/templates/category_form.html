@@ -40,8 +40,11 @@
       </div>
 
       <div class="col-12 text-center mt-4">
-        <button type="submit" class="btn btn-success">
-          {{ action }} Categoria
+        <button
+          type="submit"
+          class="btn {% if action == 'Editar' %}btn-warning{% else %}btn-success{% endif %}"
+        >
+          {% if action == 'Editar' %}{{ action }}{% else %}+ Cadastro{% endif %}
         </button>
       </div>
     </form>
