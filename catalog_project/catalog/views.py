@@ -17,7 +17,8 @@ from django.core.files.storage import default_storage
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
+from catalog.forms.sendMessage_form import SendMessageForm
 from core.helpers.ultis import image_to_base64, save_image_from_base64
 from core.models.catalog_models import Catalog
 from core.models.category_models import Category
@@ -132,9 +133,12 @@ def catalog_detail(request):
 
     products = catalog.products_catalog.all()
 
+    form = SendMessageForm()
+
     return render(request, 'catalog_detail.html', {
         'catalog': catalog,
-        'products': products
+        'products': products,
+        'form': form
     })
 
 @login_required
@@ -321,6 +325,31 @@ def catalog_delete_view(request, pk):
         return redirect('catalog_list')
 
     return render(request, 'catalog_delete.html', {'catalog': catalog})
+
+def send_message_view(request):
+    if request.method == 'POST':
+        form = SendMessageForm(request.POST)
+        catalog_id = request.POST.get('catalog_id')
+        catalog = CatalogService().get_catalog(catalog_id)
+        
+        if not catalog:
+            return JsonResponse({'success': False, 'errors': {'catalog_id': 'Catálogo não encontrado.'}}, status=400)
+
+        if form.is_valid():
+            message_data = {
+                'name': form.cleaned_data['name'],
+                'email': form.cleaned_data['email'],
+                'phone': form.cleaned_data['phone'],
+                'content': form.cleaned_data['content'],
+                'catalog': catalog
+            }
+            MessageService().create_message(message_data)
+            return JsonResponse({'success': True})
+        else:
+            errors = form.errors.as_json()
+            return JsonResponse({'success': False, 'errors': errors}, status=400)
+    
+    return JsonResponse({'success': False, 'errors': {'form': 'Método não permitido.'}}, status=405)
 
 @login_required
 @require_http_methods(["GET"])
