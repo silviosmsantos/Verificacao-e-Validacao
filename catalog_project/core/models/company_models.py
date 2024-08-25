@@ -13,6 +13,9 @@ class Company(BaseModel):
         max_length=255,
         validators=[validate_company_name]
     )
+    
+    email = models.EmailField(unique=True, null=True)
+
     status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,

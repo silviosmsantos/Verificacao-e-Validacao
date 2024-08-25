@@ -1,3 +1,4 @@
+from jsonschema import ValidationError
 from core.models.company_models import Company
 
 class CompanyRepository:
@@ -11,6 +12,8 @@ class CompanyRepository:
 
     @staticmethod
     def create_company(data):
+        if Company.objects.filter(email=data['email']).exists():
+            raise ValidationError("Já existe uma empresa cadastrada com este e-mail.")
         return Company.objects.create(**data)
 
     @staticmethod

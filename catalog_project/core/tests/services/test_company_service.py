@@ -1,10 +1,13 @@
 from django.test import TestCase
+from faker import Faker
 from core.services.company_service import CompanyService
 from core.models.company_models import Company
 
+fake = Faker('pt_BR')
+
 class CompanyServiceTest(TestCase):
     def setUp(self):
-        self.company = Company.objects.create(name='Test Company', status='active')
+        self.company = Company.objects.create(name='Test Company', status='active', email=fake.email())
 
     def test_get_all_companies(self):
         companies = CompanyService.get_all_companies()
@@ -15,7 +18,7 @@ class CompanyServiceTest(TestCase):
         self.assertEqual(self.company, company)
 
     def test_create_company(self):
-        data = {'name': 'New Company', 'status': 'active'}
+        data = {'name': 'New Company', 'status': 'active', 'email': 'test1@example.com'}
         company = CompanyService.create_company(data)
         self.assertEqual(company.name, 'New Company')
 

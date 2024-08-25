@@ -5,8 +5,10 @@ from django.http import  JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
+from jsonschema import ValidationError
 from catalog.forms.catalog_form import CatalogForm, ProductFormSet
 from catalog.forms.categoryForm import CategoryForm
+from catalog.forms.company_form import CompanyForm
 from catalog.forms.login_form import LoginForm
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from catalog.forms.message_form import MessageFilterForm
@@ -26,6 +28,7 @@ from core.models.product_models import Product
 from core.models.userPermission import UserPermission
 from core.services.catalog_service import CatalogService
 from core.services.category_service import CategoryService
+from core.services.company_service import CompanyService
 from core.services.message_service import MessageService
 from core.services.product_services import ProductService
 from core.services.user_service import UserService
@@ -98,6 +101,23 @@ def register_view(request):
     else:
         form = RegisterForm()
     return render(request, 'register.html', {'form': form})
+
+def company_register_view(request):
+    if request.method == 'POST':
+        form = CompanyForm(request.POST)
+        if form.is_valid():
+            try:
+                data = form.cleaned_data
+                data['status'] = 'active'
+                CompanyService.create_company(data)
+                messages.success(request, 'Empresa cadastrada com sucesso!')
+                return redirect('login')
+            except ValidationError as e:
+                form.add_error(None, e.message)
+    else:
+        form = CompanyForm()
+
+    return render(request, 'company_register.html', {'form': form})
 
 @require_http_methods(["GET"]) 
 def catalog_company_visualize_product(request):

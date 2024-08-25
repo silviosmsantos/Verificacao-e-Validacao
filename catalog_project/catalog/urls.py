@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import  add_products_view, catalog_company_visualize_product, catalog_create_view, catalog_delete_view, catalog_detail, catalog_list_view, category_create_view, category_delete_view, category_edit_view, category_list_by_company_view, get_products_by_catalog_view, message_delete_view, permissions_list_view, login_view, messages_list_view, profile_view, register_view, home_view, save_products_view
+from .views import  add_products_view, catalog_company_visualize_product, catalog_create_view, catalog_delete_view, catalog_detail, catalog_list_view, category_create_view, category_delete_view, category_edit_view, category_list_by_company_view, company_register_view, get_products_by_catalog_view, message_delete_view, permissions_list_view, login_view, messages_list_view, profile_view, register_view, home_view, save_products_view
 from django.contrib.auth import views as auth_views
 
 
@@ -22,6 +22,8 @@ urlpatterns = [
     path('category/create/', category_create_view, name='category_create'),
     path('category/edit/<uuid:pk>/', category_edit_view, name='category_edit'),
     path('category/delete/<uuid:pk>/', category_delete_view, name='category_delete'),
+
+    path('company_register/', company_register_view, name='company_register'),
 
     path('messages_list/', messages_list_view, name='messages_list'),
     path('message_delete/<uuid:message_id>/', message_delete_view, name='message_delete'),

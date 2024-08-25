@@ -1,21 +1,29 @@
 {% extends 'base.html' %} {% load static %} {% block title %}Login{% endblock %}
 {% block content %}
-<div class="card">
-  <h2 class="text-center">Login</h2>
+<div class="card mx-auto mt-5 p-4" style="max-width: 400px">
+  <h2 class="text-center mb-4">Login</h2>
+
   {% if messages %}
-  <div class="alert alert-danger">
-    {% for message in messages %} {{ message }} {% endfor %}
+  <div class="alert alert-success">
+    {% for message in messages %}
+    <p class="mb-1">{{ message }}</p>
+    {% endfor %}
   </div>
   {% endif %}
+
   <form method="post">
     {% csrf_token %} {{ form.as_p }}
-    <div class="text-center">
-      <button type="submit" class="btn btn-primary">Login</button>
+    <div class="text-center mt-3">
+      <button type="submit" class="btn btn-primary btn-block">Login</button>
     </div>
   </form>
-  <div class="extra-links">
-    <a href="{% url 'password_reset' %}">Esqueci minha senha</a>
-    <a href="{% url 'register' %}">Registrar-se</a>
+
+  <div class="extra-links text-center mt-4">
+    <a href="{% url 'password_reset' %}" class="d-block">Esqueci minha senha</a>
+    <a href="{% url 'register' %}" class="d-block">Registrar-se</a>
+    <a href="{% url 'company_register' %}" class="d-block"
+      >Cadastrar sua empresa</a
+    >
   </div>
 </div>
 {% endblock %}
