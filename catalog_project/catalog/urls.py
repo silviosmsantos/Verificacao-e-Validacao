@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import  add_products_view, catalog_company_visualize_product, catalog_create_view, catalog_delete_view, catalog_detail, catalog_list_view, category_create_view, category_delete_view, category_edit_view, category_list_by_company_view, company_register_view, get_products_by_catalog_view, message_delete_view, permissions_list_view, login_view, messages_list_view, profile_view, register_view, home_view, save_products_view
+from .views import  add_products_view, catalog_company_visualize_product, catalog_create_view, catalog_delete_view, catalog_detail, catalog_list_view, category_create_view, category_delete_view, category_edit_view, category_list_by_company_view, company_register_view, get_products_by_catalog_view, message_delete_view, permissions_list_view, login_view, messages_list_view, profile_view, register_view, home_view, save_products_view, send_message_view
 from django.contrib.auth import views as auth_views
 
 
@@ -17,6 +17,8 @@ urlpatterns = [
     path('catalog_detail/', catalog_detail, name='catalog_detail'),
     path('catalog/<uuid:catalog_id>/save-products/', save_products_view, name='save_products'),
     path('catalog/<uuid:catalog_id>/products/', get_products_by_catalog_view, name='get_products_by_catalog'),
+
+    path('send-message/', send_message_view, name='send_message'),
 
     path('categories/company/', category_list_by_company_view, name='categories_by_company'),
     path('category/create/', category_create_view, name='category_create'),
