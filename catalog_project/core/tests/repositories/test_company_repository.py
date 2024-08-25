@@ -4,7 +4,7 @@ from core.repositories.company_repository import CompanyRepository
 
 class CompanyRepositoryTest(TestCase):
     def setUp(self):
-        self.company = Company.objects.create(name='Test Company', status='active')
+        self.company = Company.objects.create(name='Test Company', status='active',email="test@example.com")
 
     def test_get_all_companies(self):
         companies = CompanyRepository.get_all_companies()
@@ -15,7 +15,7 @@ class CompanyRepositoryTest(TestCase):
         self.assertEqual(self.company, company)
 
     def test_create_company(self):
-        data = {'name': 'New Company', 'status': 'active'}
+        data = {'name': 'New Company', 'status': 'active', 'email': 'test2@example.com'}
         company = CompanyRepository.create_company(data)
         self.assertEqual(company.name, 'New Company')
 

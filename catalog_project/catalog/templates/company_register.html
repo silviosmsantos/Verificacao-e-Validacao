@@ -1,0 +1,25 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Cadastro de
+Empresa{% endblock %} {% block content %}
+<div class="card mx-auto mt-5 p-4" style="max-width: 500px">
+  <h2 class="text-center mb-4">Cadastro de Empresa</h2>
+
+  {% if messages %}
+  <div class="alert alert-success">
+    {% for message in messages %} {{ message }} {% endfor %}
+  </div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %} {{ form.as_p }}
+    <div class="text-center mt-3">
+      <button type="submit" class="btn btn-success btn-block">
+        Cadastrar Empresa
+      </button>
+    </div>
+  </form>
+
+  <div class="extra-links text-center mt-4">
+    <a href="{% url 'login' %}" class="d-block">Voltar ao Login</a>
+  </div>
+</div>
+{% endblock %}

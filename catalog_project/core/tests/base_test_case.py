@@ -18,7 +18,7 @@ class BaseTestCase(TestCase):
         self.product_data = self.get_product_data()
 
     def create_company(self):
-        return Company.objects.create(name='Test Company', status='active')
+        return Company.objects.create(name='Test Company', status='active', email="test@example.com")
 
     def create_user(self, company):
         return User.objects.create(

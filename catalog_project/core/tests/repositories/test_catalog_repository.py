@@ -8,7 +8,8 @@ class CatalogRepositoryTest(TestCase):
     def setUp(self):
         self.company = Company.objects.create(
             name="Test Company",
-            status="active"
+            status="active",
+            email="test@example.com"
         )
         self.user = User.objects.create(
             name="Test User",

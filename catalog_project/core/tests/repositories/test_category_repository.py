@@ -5,7 +5,7 @@ from core.models.company_models import Company
 
 class CategoryRepositoryTest(TestCase):
     def setUp(self):
-        self.company = Company.objects.create(name='Test Company', status='active')
+        self.company = Company.objects.create(name='Test Company', status='active', email="test@example.com")
         self.category = Category.objects.create(name='Test Category', status='active', company=self.company)
 
     def test_get_all_categories(self):
