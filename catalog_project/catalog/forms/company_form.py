@@ -15,3 +15,9 @@ class CompanyForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'})
         }
+        
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if Company.objects.filter(email=email).exists():
+            raise ValidationError("Já existe uma empresa cadastrada com este e-mail.")
+        return email
