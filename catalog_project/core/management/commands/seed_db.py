@@ -31,7 +31,7 @@ class Command(BaseCommand):
 
 def create_companies():
     companies = []
-    for _ in range(2):
+    for _ in range(1):
         company_name = fake.company()
         company, _ = Company.objects.get_or_create(
             name=company_name,
@@ -42,7 +42,7 @@ def create_companies():
 
 def create_users(companies):
     users = []
-    for _ in range(4):
+    for _ in range(1):
         email = fake.email()
         user, created = User.objects.get_or_create(
             email=email,
@@ -93,7 +93,7 @@ def create_categories(companies):
 
 def create_catalogs_for_company(company, users):
     catalogs = []
-    for _ in range(20):
+    for _ in range(5):
         catalog_name = fake.word()
         catalog, _ = Catalog.objects.get_or_create(
             name=catalog_name,
@@ -109,7 +109,7 @@ def create_catalogs_for_company(company, users):
 def create_products():
     catalogs = Catalog.objects.all()
     categories = Category.objects.all()
-    for _ in range(5):
+    for _ in range(3):
         product_data = {
             'name': fake.word(),
             'description': fake.text(max_nb_chars=200),
@@ -123,7 +123,7 @@ def create_products():
 
 def create_messages_for_catalogs(catalogs):
     for catalog in catalogs:
-        for _ in range(5):
+        for _ in range(3):
             message_content = fake.text(max_nb_chars=200)
             Message.objects.create(
                 name=fake.name(),
