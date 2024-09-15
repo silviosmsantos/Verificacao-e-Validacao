@@ -50,3 +50,19 @@ class CategoryViewTestCase(TestCase):
         delete_url = reverse('category_delete', args=[self.category.pk])
         response = self.client.get(delete_url)
         self.assertEqual(response.status_code, 200)
+
+    def test_category_delete_view_post(self):
+        delete_url = reverse('category_delete', args=[self.category.pk])
+        response = self.client.post(delete_url)
+        self.assertRedirects(response, reverse('categories_by_company'))
+        self.assertFalse(Category.objects.filter(pk=self.category.pk).exists())
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(any(msg.message == 'category excluída com sucesso.' for msg in messages))
+
+    def test_category_delete_view_non_existent(self):
+        non_existent_id = uuid4()
+        delete_url = reverse('category_delete', args=[non_existent_id])
+        response = self.client.post(delete_url)
+        self.assertRedirects(response, reverse('categories_by_company'))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(any(msg.message == 'Category não encontrada.' for msg in messages))
