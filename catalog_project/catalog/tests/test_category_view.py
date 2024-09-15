@@ -66,3 +66,35 @@ class CategoryViewTestCase(TestCase):
         self.assertRedirects(response, reverse('categories_by_company'))
         messages = list(get_messages(response.wsgi_request))
         self.assertTrue(any(msg.message == 'Category não encontrada.' for msg in messages))
+
+    def test_category_create_view(self):
+        create_url = reverse('category_create')
+        response = self.client.post(create_url, {
+            'name': 'New Category',
+            'status': 'active',
+            'company': self.company.pk 
+        })
+        self.assertRedirects(response, reverse('categories_by_company'))
+        self.assertTrue(Category.objects.filter(name='New Category').exists())
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(any(msg.message == 'Categoria criada com sucesso.' for msg in messages))
+
+    def test_category_edit_view_get(self):
+        edit_url = reverse('category_edit', args=[self.category.pk])
+        response = self.client.get(edit_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.category.name)
+
+    def test_category_edit_view_post(self):
+        edit_url = reverse('category_edit', args=[self.category.pk])
+        response = self.client.post(edit_url, {
+            'name': 'Updated Category',
+            'status': 'inactive',
+            'company': self.company.pk  # Inclua o company no post
+        })
+        self.assertRedirects(response, reverse('categories_by_company'))
+        self.category.refresh_from_db()
+        self.assertEqual(self.category.name, 'Updated Category')
+        self.assertEqual(self.category.status, 'inactive')
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(any(msg.message == 'Categoria atualizada com sucesso.' for msg in messages))
