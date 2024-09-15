@@ -90,7 +90,7 @@ class CategoryViewTestCase(TestCase):
         response = self.client.post(edit_url, {
             'name': 'Updated Category',
             'status': 'inactive',
-            'company': self.company.pk  # Inclua o company no post
+            'company': self.company.pk 
         })
         self.assertRedirects(response, reverse('categories_by_company'))
         self.category.refresh_from_db()
