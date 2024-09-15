@@ -33,3 +33,20 @@ class CategoryViewTestCase(TestCase):
         )
         self.category_id = self.category.pk
 
+    def test_category_list_view_status_code(self):
+        response = self.client.get(reverse('categories_by_company'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Test Category')
+
+    def test_category_list_view_filter(self):
+        response = self.client.get(reverse('categories_by_company'), {'name': 'Test'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Test Category')
+
+        response = self.client.get(reverse('categories_by_company'), {'name': 'Invalid'})
+        self.assertNotContains(response, 'Test Category')
+
+    def test_category_delete_view_get(self):
+        delete_url = reverse('category_delete', args=[self.category.pk])
+        response = self.client.get(delete_url)
+        self.assertEqual(response.status_code, 200)
