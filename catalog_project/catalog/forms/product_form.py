@@ -4,7 +4,7 @@ from core.models.product_models import Product
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'description', 'price', 'image', 'status', 'category']  # Adicione os campos necessários
+        fields = ['name', 'description', 'price', 'image', 'status', 'category']
 
         labels = {
             'name': 'Nome',

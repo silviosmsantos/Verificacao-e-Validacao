@@ -108,16 +108,14 @@ Catálogo{% endblock %} {% block content %}
         success: function (response) {
           if (response.success) {
             $("#sendMessageDialog").hide();
-            $("#sendMessageForm")[0].reset(); // Limpa o formulário
+            $("#sendMessageForm")[0].reset();
             $(".form-control").removeClass("is-invalid");
             $(".invalid-feedback").remove();
             alert("Mensagem enviada com sucesso!");
           } else {
-            // Limpa classes de erro antigas
             $(".form-control").removeClass("is-invalid");
             $(".invalid-feedback").remove();
 
-            // Adiciona as classes de erro aos campos com problemas
             $.each(response.errors, function (key, value) {
               let field = $(`[name="${key}"]`);
               field.addClass("is-invalid");
@@ -134,7 +132,7 @@ Catálogo{% endblock %} {% block content %}
     // Função para limpar o formulário e a borda vermelha ao fechar o modal
     $(".close").on("click", function () {
       $("#sendMessageDialog").hide();
-      $("#sendMessageForm")[0].reset(); // Limpa o formulário
+      $("#sendMessageForm")[0].reset();
       $(".form-control").removeClass("is-invalid");
       $(".invalid-feedback").remove();
     });
@@ -142,7 +140,7 @@ Catálogo{% endblock %} {% block content %}
     $("#sendMessageDialog").on("click", function (e) {
       if ($(e.target).is("#sendMessageDialog")) {
         $(this).hide();
-        $("#sendMessageForm")[0].reset(); // Limpa o formulário
+        $("#sendMessageForm")[0].reset();
         $(".form-control").removeClass("is-invalid");
         $(".invalid-feedback").remove();
       }
