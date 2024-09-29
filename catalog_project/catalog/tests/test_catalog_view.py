@@ -36,3 +36,16 @@ class CatalogViewsTestCase(TestCase):
         self.assertIn('catalogs', response.context)
         self.assertEqual(response.context['selected_company'], self.company)
 
+    def test_catalog_list_view(self):
+        response = self.client.get(reverse('catalog_list'))
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTemplateUsed(response, 'catalog_list.html')
+
+        self.assertIn('catalogs', response.context)
+        
+        catalogs = response.context['catalogs']
+        self.assertEqual(catalogs.count(), 1)
+
+        # self.assertEqual(catalogs.first(), self.catalog)
