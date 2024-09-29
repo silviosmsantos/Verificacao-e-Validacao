@@ -3,8 +3,6 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from core.models import Company, Catalog
 
-User = get_user_model()
-
 class CatalogViewsTestCase(TestCase):
     def setUp(self):
         self.company = Company.objects.create(
@@ -30,5 +28,11 @@ class CatalogViewsTestCase(TestCase):
         
         self.client.login(email='testuser@example.com', password='securepassword')
 
-    
+    def test_catalog_company_visualize_product(self):
+        response = self.client.get(reverse('catalog_company_visualize_product'), {'company_id': self.company.id})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'catalog_company_visualize_product.html')
+        self.assertIn('companies', response.context)
+        self.assertIn('catalogs', response.context)
+        self.assertEqual(response.context['selected_company'], self.company)
 
