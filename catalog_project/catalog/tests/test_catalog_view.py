@@ -48,4 +48,4 @@ class CatalogViewsTestCase(TestCase):
         catalogs = response.context['catalogs']
         self.assertEqual(catalogs.count(), 1)
 
-        # self.assertEqual(catalogs.first(), self.catalog)
+        self.assertEqual(catalogs.first(), self.catalog)
