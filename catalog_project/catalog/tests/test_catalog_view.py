@@ -49,3 +49,6 @@ class CatalogViewsTestCase(TestCase):
         self.assertEqual(catalogs.count(), 1)
 
         self.assertEqual(catalogs.first(), self.catalog)
+
+    def test_catalog_detail_view(self):
+        pass
