@@ -2,6 +2,7 @@ from datetime import timedelta
 import os
 from pathlib import Path
 from decouple import config, Csv
+import dj_database_url 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -85,25 +86,21 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(weeks=1),
 }
 
+ENVIRONMENT = config('ENVIRONMENT', default='production')
+
 # Configuração do banco de dados
-ENVIRONMENT = config('ENVIRONMENT', default='development')
-if ENVIRONMENT == 'production':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('DB_NAME'),
-            'USER': config('DB_USER'),
-            'PASSWORD': config('DB_PASSWORD'),
-            'HOST': config('DB_HOST'),
-            'PORT': config('DB_PORT', default='5432'),
-        }
-    }
-else:
+if ENVIRONMENT == 'development':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
+    }
+else:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=config('DATABASE_URL', default="")
+        )
     }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -143,7 +140,6 @@ LOGGING = {
     },
 }
 
-
 AUTH_USER_MODEL = 'core.User'
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -161,6 +157,7 @@ TIME_ZONE = "America/Sao_Paulo"
 USE_I18N = True
 USE_TZ = True
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "catalog/static"]
 

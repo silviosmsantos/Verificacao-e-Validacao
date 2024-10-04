@@ -1,0 +1,38 @@
+
+body {
+  background-image: url("../images/backgoud-site.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  padding-top: 20px; 
+}
+
+.container {
+  max-width: 1200px; 
+  margin: 0 auto; 
+  padding: 20px;
+}
+
+.card {
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.extra-links {
+  margin-top: 15px;
+}
+
+.extra-links a {
+  display: block;
+  text-align: center;
+  margin-top: 5px;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.extra-links a:hover {
+  text-decoration: underline;
+}
