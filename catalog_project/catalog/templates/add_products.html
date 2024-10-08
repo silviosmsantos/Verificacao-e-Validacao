@@ -127,9 +127,13 @@
               </div>
               <div class="col-md-6 mb-3">
                 <label for="productStatus" class="form-label">Status</label>
-                <select class="form-select" id="productStatus" required>
-                  <option value="active">Ativo</option>
-                  <option value="inactive">Inativo</option>
+                <select
+                  class="form-select"
+                  id="productStatus"
+                  required
+                  disabled
+                >
+                  <option value="active" selected>Ativo</option>
                 </select>
                 <div class="invalid-feedback" id="productStatusError"></div>
               </div>
@@ -420,7 +424,17 @@
 
       const productDataInput = document.getElementById("productData");
       const catalogId = "{{ catalog.id }}";
-      console.log(catalogId);
+      console.log(productDataInput);
+
+      const productData = JSON.parse(productDataInput.value).map((product) => {
+        if (product.status === "Ativo") {
+          product.status = "active";
+        } else if (product.status === "Inativo") {
+          product.status = "inactive";
+        }
+        return product;
+      });
+
       fetch(`/catalog/${catalogId}/save-products/`, {
         method: "POST",
         headers: {
@@ -428,7 +442,7 @@
           "X-CSRFToken": "{{ csrf_token }}",
         },
         body: JSON.stringify({
-          product_data: JSON.parse(productDataInput.value),
+          product_data: productData,
         }),
       })
         .then((response) => response.json())
