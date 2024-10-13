@@ -91,3 +91,15 @@ class CatalogViewsTestCase(TestCase):
         self.assertIn('products', response_data)
         self.assertEqual(len(response_data['products']), 1)
         self.assertEqual(response_data['products'][0]['name'], 'Product 1')
+
+    def test_catalog_create_view_create_new_catalog(self):
+        response = self.client.post(reverse('catalog_create'), {
+            'name': 'New Catalog',
+            'status': 'active'
+        })
+        self.assertEqual(response.status_code, 200)
+        new_catalog = Catalog.objects.get(name='New Catalog')
+        self.assertIsNotNone(new_catalog)
+        self.assertEqual(new_catalog.status, 'active')
+        self.assertEqual(new_catalog.company, self.company)
+        self.assertEqual(new_catalog.user, self.user)
