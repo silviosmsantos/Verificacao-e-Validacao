@@ -6,4 +6,7 @@ db.sqlite3
 media/
 .coverage
 staticfiles/
-docs/
+
+docs/_build/
+docs/htmlcov/
+docs/.coverage
