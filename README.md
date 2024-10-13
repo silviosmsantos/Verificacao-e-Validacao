@@ -41,3 +41,9 @@
 ```bash
   pytest
 ```
+
+### 8. Run docs class project
+
+```bash
+make html
+```
