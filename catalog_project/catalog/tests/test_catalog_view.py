@@ -3,6 +3,8 @@ from django.urls import reverse
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from core.models import Company, Catalog
+from core.models.category_models import Category
+from core.models.product_models import Product
 
 class CatalogViewsTestCase(TestCase):
     def setUp(self):
@@ -26,6 +28,7 @@ class CatalogViewsTestCase(TestCase):
             company=self.company,
             user=self.user
         )
+        self.category = Category.objects.create(name='Test Category', status='active', company=self.company)
 
         self.client.login(email='testuser@example.com', password='securepassword')
 
@@ -69,3 +72,22 @@ class CatalogViewsTestCase(TestCase):
         invalid_uuid = uuid.uuid4()
         response = self.client.get(reverse('catalog_detail'), {'catalog_id': invalid_uuid})
         self.assertEqual(response.status_code, 302)
+
+    def test_get_products_by_catalog_view(self):
+        _ = Product.objects.create(
+            name='Product 1',
+            price=100.0,
+            catalog=self.catalog,
+            status='active',
+            description='A product description',
+            category=self.category
+        )
+
+        response = self.client.get(reverse('get_products_by_catalog', kwargs={'catalog_id': self.catalog.id}))
+
+        self.assertEqual(response.status_code, 200)
+
+        response_data = response.json()
+        self.assertIn('products', response_data)
+        self.assertEqual(len(response_data['products']), 1)
+        self.assertEqual(response_data['products'][0]['name'], 'Product 1')
