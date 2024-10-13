@@ -3,6 +3,14 @@ from .base_model import BaseModel
 from core.validators.company_validators import validate_company_name
 
 class Company(BaseModel):
+    """
+    Modelo que representa uma empresa.
+
+    Attributes:
+        name (str): Nome da empresa. Deve ser único e seguir as regras de validação.
+        email (str): Endereço de e-mail da empresa. Deve ser único.
+        status (str): Status da empresa (ativa ou inativa).
+    """
     STATUS_CHOICES = [
         ('active', 'Active'),
         ('inactive', 'Inactive'),

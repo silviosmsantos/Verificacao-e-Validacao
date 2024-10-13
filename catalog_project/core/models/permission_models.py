@@ -3,6 +3,13 @@ from .base_model import BaseModel
 from core.validators.permission_validators import validate_permission_name
 
 class Permission(BaseModel):
+    """
+    Modelo que representa uma permissão no sistema.
+
+    Attributes:
+        name (str): Nome da permissão.
+        status (str): Status da permissão (ativo ou inativo).
+    """
     name = models.CharField(
         max_length=255,
         null=False,

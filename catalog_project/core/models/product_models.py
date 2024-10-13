@@ -11,6 +11,18 @@ from django.core.files.storage import FileSystemStorage
 fs = FileSystemStorage(location=os.path.join(BASE_DIR, 'media/images'))
 
 class Product(BaseModel):
+    """
+    Modelo que representa um produto no sistema.
+
+    Attributes:
+        name (str): Nome do produto.
+        description (str): Descrição do produto.
+        price (Decimal): Preço do produto.
+        image (ImageField): Imagem do produto.
+        status (str): Status do produto (ativo ou inativo).
+        category (Category): Categoria associada ao produto.
+        catalog (Catalog): Catálogo associado ao produto.
+    """
     
     STATUS_CHOICES = [
         ('active', 'Active'),

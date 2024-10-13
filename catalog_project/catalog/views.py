@@ -26,7 +26,7 @@ from core.models.catalog_models import Catalog
 from core.models.category_models import Category
 from core.models.company_models import Company
 from core.models.product_models import Product
-from core.models.userPermission import UserPermission
+from core.models.userPermission_models import UserPermission
 from core.services.catalog_service import CatalogService
 from core.services.category_service import CategoryService
 from core.services.company_service import CompanyService

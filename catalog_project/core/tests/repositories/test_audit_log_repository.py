@@ -1,5 +1,5 @@
 from django.test import TestCase
-from core.models.audit_log import AuditLog
+from core.models.audit_log_models import AuditLog
 from core.models.user_models import User
 from core.models.company_models import Company
 from core.repositories.audit_log_repository import AuditLogRepository

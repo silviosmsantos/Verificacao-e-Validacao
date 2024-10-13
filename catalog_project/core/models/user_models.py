@@ -5,6 +5,18 @@ from .managers import CustomUserManager
 from .base_model import BaseModel
 
 class User(AbstractBaseUser, PermissionsMixin, BaseModel):
+    """
+    Modelo que representa um usuário do sistema.
+
+    Attributes:
+        name (str): Nome do usuário.
+        email (str): E-mail do usuário (campo único).
+        phone (str): Número de telefone do usuário.
+        status (str): Status do usuário (ativo ou inativo).
+        company (Company): Referência à empresa associada ao usuário.
+        is_active (bool): Indica se o usuário está ativo.
+        profile (str): Perfil do usuário (manager ou admin).
+    """
     PROFILE_CHOICES = [
         ('manager', 'Manager'),
         ('admin', 'Admin'),

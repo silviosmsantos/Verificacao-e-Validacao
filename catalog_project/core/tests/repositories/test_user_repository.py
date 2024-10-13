@@ -1,4 +1,4 @@
-from core.models.userPermission import UserPermission
+from core.models.userPermission_models import UserPermission
 from core.repositories.user_repository import UserRepository
 from core.models.user_models import User
 from core.models.company_models import Company

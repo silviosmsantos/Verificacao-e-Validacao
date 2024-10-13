@@ -4,6 +4,15 @@ from core.models.base_model import BaseModel
 from core.models.company_models import Company
 
 class Catalog(BaseModel):
+    """
+    Modelo que representa um catálogo.
+
+    Attributes:
+        name (str): Nome do catálogo.
+        status (str): Status do catálogo (ativo ou inativo).
+        company (Company): Referência à empresa associada.
+        user (User): Referência ao usuário que criou o catálogo.
+    """
     STATUS_CHOICES = [
         ('active', 'Active'),
         ('inactive', 'Inactive'),

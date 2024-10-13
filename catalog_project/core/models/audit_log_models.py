@@ -3,6 +3,14 @@ from .base_model import BaseModel
 from .user_models import User
 
 class AuditLog(BaseModel):
+    """
+    Modelo que representa um log de auditoria.
+
+    Attributes:
+        action (str): Ação realizada (criação, atualização ou exclusão).
+        timestamp (datetime): Data e hora em que a ação foi realizada.
+        user (User): Referência ao usuário que realizou a ação.
+    """
     ACTION_CHOICES = [
         ('create', 'Create'),
         ('update', 'Update'),

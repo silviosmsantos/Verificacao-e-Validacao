@@ -4,6 +4,15 @@ from .company_models import Company
 from core.validators.category_validators import validate_category_name
 
 class Category(BaseModel):
+    """
+    Modelo que representa uma categoria.
+
+    Attributes:
+        name (str): Nome da categoria. Deve ser único e seguir as regras de validação.
+        status (str): Status da categoria (ativo ou inativo).
+        company (Company): Referência à empresa associada.
+    """
+    
     STATUS_CHOICES = [
         ('active', 'Active'),
         ('inactive', 'Inactive'),

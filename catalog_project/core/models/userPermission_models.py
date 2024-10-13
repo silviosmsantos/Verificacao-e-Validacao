@@ -4,6 +4,14 @@ from .user_models import User
 from .permission_models import Permission 
 
 class UserPermission(models.Model):
+    """
+    Modelo que associa usuários a permissões.
+
+    Attributes:
+        user (User): Referência ao usuário associado.
+        permission (Permission): Referência à permissão associada ao usuário.
+    """
+    
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     permission = models.ForeignKey(Permission, on_delete=models.CASCADE)
 

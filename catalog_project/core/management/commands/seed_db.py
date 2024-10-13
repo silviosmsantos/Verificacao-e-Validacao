@@ -3,7 +3,7 @@ from faker import Faker
 import secrets
 from core.models.company_models import Company
 from core.models.permission_models import Permission
-from core.models.userPermission import UserPermission
+from core.models.userPermission_models import UserPermission
 from core.models.user_models import User
 from core.models.catalog_models import Catalog
 from core.models.message_models import Message

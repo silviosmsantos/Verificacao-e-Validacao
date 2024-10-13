@@ -4,6 +4,17 @@ from core.models.catalog_models import Catalog
 from core.validators.message_validator import validate_name, validate_phone
 
 class Message(BaseModel):
+    """
+    Modelo que representa uma mensagem enviada por um usuário.
+
+    Attributes:
+        name (str): Nome do remetente da mensagem.
+        email (str): E-mail do remetente da mensagem.
+        phone (str): Telefone do remetente da mensagem.
+        content (str): Conteúdo da mensagem.
+        sent_at (datetime): Data e hora em que a mensagem foi enviada.
+        catalog (Catalog): Referência ao catálogo associado à mensagem.
+    """
     name = models.CharField(max_length=255, null=False, blank=False, validators=[validate_name])
     email = models.EmailField(null=False, blank=False)
     phone = models.CharField(max_length=20, null=False, blank=False, validators=[validate_phone])

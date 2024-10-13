@@ -1,4 +1,4 @@
-from core.models.audit_log import AuditLog
+from core.models.audit_log_models import AuditLog
 from core.validators.audit_log_validators import validate_audit_log_data
 
 class AuditLogRepository:
