@@ -1,3 +1,4 @@
+import json
 import uuid
 from django.urls import reverse
 from django.test import TestCase
@@ -103,3 +104,79 @@ class CatalogViewsTestCase(TestCase):
         self.assertEqual(new_catalog.status, 'active')
         self.assertEqual(new_catalog.company, self.company)
         self.assertEqual(new_catalog.user, self.user)
+
+    def test_catalog_create_view_edit_existing_catalog(self):
+        response = self.client.post(reverse('catalog_edit', kwargs={'catalog_id': self.catalog.id}), {
+            'name': 'Updated Catalog',
+            'status': 'inactive'
+        })
+        self.assertEqual(response.status_code, 200)
+        updated_catalog = Catalog.objects.get(id=self.catalog.id)
+        self.assertEqual(updated_catalog.name, 'Updated Catalog')
+        self.assertEqual(updated_catalog.status, 'inactive')
+        self.assertEqual(updated_catalog.company, self.company)
+        self.assertEqual(updated_catalog.user, self.user)
+
+    def test_add_products_view_get_request(self):
+        response = self.client.get(reverse('add_products', kwargs={'catalog_id': self.catalog.id}))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'add_products.html')
+
+        self.assertIn('catalog', response.context)
+        self.assertIn('formset', response.context)
+        self.assertIn('categories', response.context)
+
+    def test_save_products_view_valid_data(self):
+        product_data = [
+            {
+                'name': 'Product 1',
+                'price': 100.0,
+                'description': 'Description for product 1',
+                'category': str(self.category.id),  
+                'status': 'active',
+                'image': None  
+            },
+            {
+                'name': 'Product 2',
+                'price': 150.0,
+                'description': 'Description for product 2',
+                'category': str(self.category.id), 
+                'status': 'active',
+                'image': None 
+            }
+        ]
+
+        response = self.client.post(
+            reverse('save_products', kwargs={'catalog_id': self.catalog.id}),
+            json.dumps({'product_data': product_data}),
+            content_type='application/json'
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, {'success': True})
+
+        products = Product.objects.filter(catalog=self.catalog)
+        self.assertEqual(products.count(), 2)
+        self.assertEqual(products[0].name, 'Product 1')
+        self.assertEqual(products[1].name, 'Product 2')
+
+    def test_save_products_view_invalid_category(self):
+        invalid_uuid = uuid.uuid4()
+        product_data = [
+            {
+                'name': 'Product 1',
+                'price': 100.0,
+                'description': 'Description for product 1',
+                'category': str(invalid_uuid),
+                'status': 'active',
+                'image': None  
+            }
+        ]
+
+        response = self.client.post(
+            reverse('save_products', kwargs={'catalog_id': self.catalog.id}),
+            json.dumps({'product_data': product_data}),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 500) 
