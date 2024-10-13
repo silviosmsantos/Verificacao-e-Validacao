@@ -1,3 +1,4 @@
+import uuid
 from django.urls import reverse
 from django.test import TestCase
 from django.contrib.auth import get_user_model
@@ -23,9 +24,9 @@ class CatalogViewsTestCase(TestCase):
             name='Test Catalog', 
             status='active', 
             company=self.company,
-            user = self.user
-          )
-        
+            user=self.user
+        )
+
         self.client.login(email='testuser@example.com', password='securepassword')
 
     def test_catalog_company_visualize_product(self):
@@ -40,15 +41,31 @@ class CatalogViewsTestCase(TestCase):
         response = self.client.get(reverse('catalog_list'))
 
         self.assertEqual(response.status_code, 200)
-
         self.assertTemplateUsed(response, 'catalog_list.html')
 
         self.assertIn('catalogs', response.context)
         
         catalogs = response.context['catalogs']
         self.assertEqual(catalogs.count(), 1)
-
         self.assertEqual(catalogs.first(), self.catalog)
 
-    def test_catalog_detail_view(self):
-        pass
+    def test_catalog_detail_view_without_catalog_id(self):
+        response = self.client.get(reverse('catalog_detail'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_catalog_detail_view_with_valid_catalog_id(self):
+        response = self.client.get(reverse('catalog_detail'), {'catalog_id': self.catalog.id})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'catalog_detail.html')
+
+        self.assertIn('catalog', response.context)
+        self.assertIn('products', response.context)
+
+        catalog = response.context['catalog']
+        self.assertEqual(catalog, self.catalog)
+
+    def test_catalog_detail_view_with_invalid_catalog_id(self):
+        invalid_uuid = uuid.uuid4()
+        response = self.client.get(reverse('catalog_detail'), {'catalog_id': invalid_uuid})
+        self.assertEqual(response.status_code, 302)
