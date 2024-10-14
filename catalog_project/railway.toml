@@ -1,0 +1,10 @@
+[service]
+name = "catalog_project"  
+
+[scripts]
+build = "pip install -r requirements.txt"
+migrate = "python manage.py migrate"       
+test = "pytest"             
+
+[deploy]
+build = "pip install -r requirements.txt && python manage.py migrate && pytest"  
