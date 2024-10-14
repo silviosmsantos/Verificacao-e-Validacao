@@ -2,9 +2,11 @@ name: Django CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   build:
@@ -26,6 +28,20 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r catalog_project/requirements.txt
+
+    - name: Set environment variables
+      run: |
+        echo "ENVIRONMENT=development" >> $GITHUB_ENV
+        echo "DEBUG=True" >> $GITHUB_ENV
+        echo "ALLOWED_HOSTS=*" >> $GITHUB_ENV
+        echo "CSRF_TRUSTED_ORIGINS=http://localhost,http://127.0.0.1" >> $GITHUB_ENV
+        echo "DEFAULT_FROM_EMAIL=Nutriclinicn <nutriclinicn@gmail.com>" >> $GITHUB_ENV
+
+    - name: Export secrets to environment
+      env:
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      run: |
+        echo "SECRET_KEY=${SECRET_KEY}" >> $GITHUB_ENV
 
     - name: Run Migrations
       run: |
