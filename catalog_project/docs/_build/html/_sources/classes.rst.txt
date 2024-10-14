@@ -45,3 +45,8 @@ Modelos de Classes
    :members:
    :undoc-members:
    :show-inheritance:
+
+.. automodule:: core.models.userPermission_models
+   :members:
+   :undoc-members:
+   :show-inheritance:
