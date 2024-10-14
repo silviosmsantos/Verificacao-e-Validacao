@@ -32,11 +32,13 @@ jobs:
     - name: Set environment variables
       run: |
         echo "ENVIRONMENT=development" >> $GITHUB_ENV
-        echo "DEBUG=True" >> $GITHUB_ENV
+        echo "DEBUG=True" >> $GITHUB_ENV 
+        echo "EMAIL_HOST_USER=nutriclinicn@gmail.com" >> $GITHUB_ENV
+        acho "EMAIL_HOST_PASSWORD=trxh sine smch lgzh" >> $GITHUB_ENV
         echo "ALLOWED_HOSTS=*" >> $GITHUB_ENV
-        echo "CSRF_TRUSTED_ORIGINS=http://localhost,http://127.0.0.1" >> $GITHUB_ENV
+        echo "CSRF_TRUSTED_ORIGINS=https://verificacao-e-validacao-production.up.railway.app,http://localhost,http://127.0.0.1,http://verificacao-e-validacao-production.up.railway.app" >> $GITHUB_ENV
         echo "DEFAULT_FROM_EMAIL=Nutriclinicn <nutriclinicn@gmail.com>" >> $GITHUB_ENV
-
+        echo "DATABASE_URL=postgresql://postgres:YehKANslvlfAJcJzLmvgHRdqRKQxREQy@autorack.proxy.rlwy.net:46101/railway" >> $GITHUB_ENV
     - name: Export secrets to environment
       env:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
