@@ -59,3 +59,7 @@ class UserRepository:
         if user:
             user.delete()
         return user
+
+    @staticmethod
+    def get_users_by_company(company_id):
+            return User.objects.filter(company_id=company_id, profile='admin')

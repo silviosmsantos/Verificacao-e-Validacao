@@ -35,6 +35,12 @@
               >Permissões</a
             >
           </li>
+          {% endif %} {% if request.user.profile == 'manager' %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'user_list_company' %}"
+              >Usuários Empresa</a
+            >
+          </li>
           {% endif %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'logout' %}">Sair</a>

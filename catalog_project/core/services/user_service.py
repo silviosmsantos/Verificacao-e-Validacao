@@ -20,3 +20,7 @@ class UserService:
     @staticmethod
     def delete_user(user_id):
         return UserRepository.delete_user(user_id)
+
+    @staticmethod
+    def list_users_by_company(company_id):
+        return UserRepository.get_users_by_company(company_id)

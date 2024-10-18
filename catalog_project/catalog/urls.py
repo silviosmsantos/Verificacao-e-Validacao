@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import  add_products_view, catalog_company_visualize_product, catalog_create_view, catalog_delete_view, catalog_detail, catalog_list_view, category_create_view, category_delete_view, category_edit_view, category_list_by_company_view, company_register_view, get_products_by_catalog_view, message_delete_view, permissions_list_view, login_view, messages_list_view, profile_view, register_view, home_view, save_products_view, send_message_view
+from .views import  add_products_view, catalog_company_visualize_product, catalog_create_view, catalog_delete_view, catalog_detail, catalog_list_view, category_create_view, category_delete_view, category_edit_view, category_list_by_company_view, company_register_view, get_products_by_catalog_view, message_delete_view, permissions_list_view, login_view, messages_list_view, profile_view, register_view, home_view, save_products_view, send_message_view, user_delete_view, user_list_view
 from django.contrib.auth import views as auth_views
 
 
@@ -33,6 +33,9 @@ urlpatterns = [
     path('profile/', profile_view, name='profile'),
 
     path('permissions_list/', permissions_list_view, name='permissions_list'),
+
+    path('user_list_company', user_list_view, name='user_list_company'),
+    path('user/delete/<uuid:pk>/', user_delete_view, name='user_delete'),
 
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('password_reset/', auth_views.PasswordResetView.as_view(template_name='registration/password_reset.html'), name='password_reset'),

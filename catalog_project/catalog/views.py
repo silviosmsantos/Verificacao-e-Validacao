@@ -21,6 +21,7 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse, reverse_lazy
 from catalog.forms.sendMessage_form import SendMessageForm
+from catalog.forms.user_form import UserFilterForm
 from core.helpers.ultis import image_to_base64, save_image_from_base64
 from core.models.catalog_models import Catalog
 from core.models.category_models import Category
@@ -58,6 +59,41 @@ def profile_required(profiles):
             return view_func(request, *args, **kwargs)
         return _wrapped_view
     return decorator
+
+@login_required
+@require_http_methods(["GET"])
+@profile_required(profiles=['manager'])
+def user_list_view(request):
+    user = request.user
+    company = user.company
+    form = UserFilterForm(request.GET or None)
+    users = UserService.list_users_by_company(company.id)
+
+    if form.is_valid():
+        users = form.filter_users(users)
+
+    context = {
+        'form': form,
+        'users': users,
+        'company_name': company.name,
+    }
+    return render(request, 'user_list_company.html', context)
+
+@login_required
+@require_http_methods(["GET", "POST"])
+@profile_required(profiles=['manager'])
+def user_delete_view(request, pk):
+    user = UserService.get_user_by_id(pk)
+    if not user:
+        messages.error(request, 'Usuário não encontrado.')
+        return redirect('user_list_company')
+    if request.method == 'POST':
+        UserService.delete_user(pk) 
+        messages.success(request, 'Usuário excluído com sucesso.')
+        return redirect('user_list_company')
+
+    return render(request, 'user_delete.html', {'user': user})
+
 
 @require_http_methods(["GET", "POST"]) 
 def login_view(request):

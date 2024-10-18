@@ -19,6 +19,10 @@ class UserRepositoryTest(BaseTestCase):
         user = UserRepository.get_user_by_id(self.user.id)
         self.assertEqual(self.user, user)
 
+    def test_get_users_by_company_only_admin(self):
+        users = UserRepository.get_users_by_company(self.company.id)
+        self.assertIn('testuser123@example.com', users.values_list('email', flat=True))
+
     def test_create_user(self):
         data = {
             'name': 'New User',

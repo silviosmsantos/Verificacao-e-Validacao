@@ -11,6 +11,15 @@ class UserServiceTest(BaseTestCase):
         super().setUp()
         self.permission1 = Permission.objects.create(name='Permission 1', status='active')
         self.permission2 = Permission.objects.create(name='Permission 2', status='active')
+
+        self.manager_user = User.objects.create(
+            name="Manager User",
+            email="manager@example.com",
+            phone="987654321",
+            status="active",
+            company=self.company,
+            profile="manager"
+        )
         
     def test_get_all_users(self):
         users = UserService.get_all_users()
@@ -55,3 +64,7 @@ class UserServiceTest(BaseTestCase):
         UserService.delete_user(self.user.id)
         user = UserService.get_user_by_id(self.user.id)
         self.assertIsNone(user)
+
+    def test_list_users_by_company_only_admin(self):
+        users = UserService.list_users_by_company(self.company.id)
+        self.assertIn('testuser123@example.com', users.values_list('email', flat=True))

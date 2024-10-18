@@ -12,7 +12,8 @@ class BaseTestCase(TestCase):
     def setUp(self):
         super().setUp()
         self.company = self.create_company()
-        self.user = self.create_user(self.company)
+        self.user = self.create_user_manager(self.company)
+        self.user_manager = self.create_user_admin(self.company)
         self.catalog = self.create_catalog(self.company, self.user)
         self.category = self.create_category()
         self.product_data = self.get_product_data()
@@ -20,7 +21,7 @@ class BaseTestCase(TestCase):
     def create_company(self):
         return Company.objects.create(name='Test Company', status='active', email="test@example.com")
 
-    def create_user(self, company):
+    def create_user_manager(self, company):
         return User.objects.create(
             name='Test User',
             email='testuser@example.com',
@@ -29,6 +30,17 @@ class BaseTestCase(TestCase):
             status='active',
             company=company,
             profile='manager'
+        )
+    
+    def create_user_admin(self, company):
+        return User.objects.create(
+            name='Test User',
+            email='testuser123@example.com',
+            phone='1234567890',
+            password='password',
+            status='active',
+            company=company,
+            profile='admin'
         )
 
     def create_catalog(self, company, user):
