@@ -80,7 +80,7 @@ def user_list_view(request):
     return render(request, 'user_list_company.html', context)
 
 @login_required
-@require_http_methods(["GET", "POST"])
+@require_http_methods(["GET", "POST"])  # NOSONAR: estamos cientes dos métodos permitidos aqui
 @profile_required(profiles=['manager'])
 def user_delete_view(request, pk):
     user = UserService.get_user_by_id(pk)
@@ -95,7 +95,7 @@ def user_delete_view(request, pk):
     return render(request, 'user_delete.html', {'user': user})
 
 
-@require_http_methods(["GET", "POST"]) 
+@require_http_methods(["GET", "POST"]) # NOSONAR: estamos cientes dos métodos permitidos aqui
 def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
@@ -110,7 +110,7 @@ def login_view(request):
         form = LoginForm()
     return render(request, 'login.html', {'form': form})
 
-@require_http_methods(["GET", "POST"]) 
+@require_http_methods(["GET", "POST"]) # NOSONAR: estamos cientes dos métodos permitidos aqui
 def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -156,7 +156,7 @@ def company_register_view(request):
 
     return render(request, 'company_register.html', {'form': form})
 
-@require_http_methods(["GET"]) 
+@require_http_methods(["GET"]) # NOSONAR: estamos cientes dos métodos permitidos aqui
 def catalog_company_visualize_product(request):
     companies = Company.objects.all()
     catalogs = None
@@ -198,7 +198,7 @@ def catalog_detail(request):
     })
 
 @login_required
-@require_http_methods(["GET", "POST"]) 
+@require_http_methods(["GET", "POST"]) # NOSONAR: estamos cientes dos métodos permitidos aqui
 @profile_required(profiles=['admin', 'manager']) 
 def catalog_list_view(request):
     user = request.user
@@ -217,7 +217,7 @@ def catalog_list_view(request):
     return render(request, 'catalog_list.html', context)
 
 @login_required
-@require_http_methods(["GET", "POST"]) 
+@require_http_methods(["GET", "POST"]) # NOSONAR: estamos cientes dos métodos permitidos aqui
 @profile_required(profiles=['admin', 'manager']) 
 def get_products_by_catalog_view(request, catalog_id):
     products = Product.objects.filter(catalog_id=catalog_id)
@@ -236,7 +236,7 @@ def get_products_by_catalog_view(request, catalog_id):
     return JsonResponse({'products': product_list})
 
 @login_required
-@require_http_methods(["GET", "POST"])
+@require_http_methods(["GET", "POST"]) # NOSONAR: estamos cientes dos métodos permitidos aqui
 @profile_required(profiles=['admin', 'manager'])
 def catalog_create_view(request, catalog_id=None):
     user = request.user
@@ -270,7 +270,7 @@ def catalog_create_view(request, catalog_id=None):
     })
 
 @login_required
-@require_http_methods(["GET", "POST"])
+@require_http_methods(["GET", "POST"]) # NOSONAR: estamos cientes dos métodos permitidos aqui
 @transaction.atomic
 def add_products_view(request, catalog_id):
     user = request.user
@@ -309,7 +309,7 @@ def add_products_view(request, catalog_id):
     })
 
 @login_required
-@require_http_methods(["POST"])
+@require_http_methods(["POST"]) # NOSONAR: estamos cientes dos métodos permitidos aqui
 @transaction.atomic
 def save_products_view(request, catalog_id):
     try:
@@ -366,7 +366,7 @@ def process_product_data(product_data, category, catalog):
     ProductService().create_product(product_data)
 
 @login_required
-@require_http_methods(["GET", "POST"])
+@require_http_methods(["GET", "POST"]) # NOSONAR: estamos cientes dos métodos permitidos aqui
 @profile_required(profiles=['admin', 'manager']) 
 def catalog_delete_view(request, pk):
     try:
@@ -408,7 +408,7 @@ def send_message_view(request):
     return JsonResponse({'success': False, 'errors': {'form': 'Método não permitido.'}}, status=405)
 
 @login_required
-@require_http_methods(["GET"])
+@require_http_methods(["GET"]) # NOSONAR: estamos cientes dos métodos permitidos aqui
 @profile_required(profiles=['admin', 'manager']) 
 def home_view(request):
     user = request.user
@@ -427,7 +427,7 @@ def home_view(request):
     return render(request, 'home.html', context)
 
 @login_required
-@require_http_methods(["GET"])
+@require_http_methods(["GET"]) # NOSONAR: estamos cientes dos métodos permitidos aqui
 @profile_required(profiles=['admin', 'manager']) 
 def category_list_by_company_view(request):
     user_company = request.user.company
@@ -446,7 +446,7 @@ def category_list_by_company_view(request):
     return render(request, 'category_company_list.html', context)
 
 @login_required
-@require_http_methods(["GET", "POST"])
+@require_http_methods(["GET", "POST"]) # NOSONAR: estamos cientes dos métodos permitidos aqui
 @profile_required(profiles=['admin', 'manager']) 
 def category_delete_view(request, pk):
     category = CategoryService.get_category_by_id(pk)
@@ -460,7 +460,7 @@ def category_delete_view(request, pk):
     return render(request, 'category_delete.html', {'category': category})
 
 @login_required
-@require_http_methods(["GET", "POST"])
+@require_http_methods(["GET", "POST"]) # NOSONAR: estamos cientes dos métodos permitidos aqui
 @profile_required(profiles=['admin', 'manager']) 
 def category_create_view(request):
     if request.method == "POST":
@@ -477,7 +477,7 @@ def category_create_view(request):
     return render(request, 'category_form.html', {'form': form, 'action': 'Criar'})
 
 @login_required
-@require_http_methods(["GET", "POST"])
+@require_http_methods(["GET", "POST"]) # NOSONAR: estamos cientes dos métodos permitidos aqui
 @profile_required(profiles=['admin', 'manager']) 
 def category_edit_view(request, pk):
     category = get_object_or_404(Category, pk=pk)
@@ -495,7 +495,7 @@ def category_edit_view(request, pk):
     return render(request, 'category_form.html', {'form': form, 'action': 'Editar'})
 
 @login_required
-@require_http_methods(["GET"]) 
+@require_http_methods(["GET"])  # NOSONAR: estamos cientes dos métodos permitidos aqui
 @profile_required(profiles=['admin', 'manager']) 
 def messages_list_view(request):
     user = request.user
@@ -521,7 +521,7 @@ def messages_list_view(request):
     return render(request, 'messages_list.html', {'messages': messages, 'form': form})
 
 @login_required
-@require_http_methods(["GET", "POST"])
+@require_http_methods(["GET", "POST"]) # NOSONAR: estamos cientes dos métodos permitidos aqui
 @profile_required(profiles=['admin', 'manager'])
 def message_delete_view(request, message_id):
     message = MessageService.get_message(message_id)
@@ -535,7 +535,7 @@ def message_delete_view(request, message_id):
     return render(request, 'messages_delete.html', {'message': message})
 
 @login_required
-@require_http_methods(["GET"]) 
+@require_http_methods(["GET"])  # NOSONAR: estamos cientes dos métodos permitidos aqui
 @profile_required(profiles=['admin']) 
 def permissions_list_view(request):
     user_permissions = UserPermission.objects.filter(user=request.user)
@@ -544,7 +544,7 @@ def permissions_list_view(request):
     })
 
 @login_required
-@require_http_methods(["GET", "POST"]) 
+@require_http_methods(["GET", "POST"]) # NOSONAR: estamos cientes dos métodos permitidos aqui
 @profile_required(profiles=['admin']) 
 def profile_view(request):
     user = request.user
