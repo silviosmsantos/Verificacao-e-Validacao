@@ -1,5 +1,13 @@
 ## Step-by-step guide to set up the project
 
+Please ensure you have **Python 3.10.12** installed before running the project.
+
+You can verify your Python version by running the following command:
+
+```bash
+  python --version
+```
+
 ### 1. Create a Virtual Environment:
 
 ```bash
@@ -49,13 +57,13 @@ To generate and view the class documentation:
 2. Generate the HTML documentation:
 
 ```bash
- make html
+  make html
 ```
 
 3. Open the generated documentation in your browser by accessing:
 
 ```bash
- open _build/html/index.html
+  open _build/html/index.html
 ```
 
 ### 8. Run tests application
