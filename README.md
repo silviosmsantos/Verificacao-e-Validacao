@@ -1,5 +1,13 @@
 ## Step-by-step guide to set up the project
 
+Please ensure you have **Python 3.10.12** installed before running the project.
+
+You can verify your Python version by running the following command:
+
+```bash
+  python --version
+```
+
 ### 1. Create a Virtual Environment:
 
 ```bash
@@ -36,14 +44,40 @@
   python manage.py runserver
 ```
 
-### 7. Run tests application
+### 7. Run docs class project
+
+To generate and view the class documentation:
+
+1. Navigate to the `docs/` folder:
+
+   ```bash
+   cd docs/
+   ```
+
+2. Generate the HTML documentation:
+
+```bash
+  make html
+```
+
+3. Open the generated documentation in your browser by accessing:
+
+```bash
+  open _build/html/index.html
+```
+
+### 8. Run tests application
+
+To run the tests and view the test coverage report:
+
+1. Run the tests using `pytest` and generate the coverage report:
 
 ```bash
   pytest
 ```
 
-### 8. Run docs class project
+2. After the tests have run, open the coverage report in your browser:
 
 ```bash
-make html
+open htmlcov/index.html
 ```
